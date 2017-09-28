@@ -3,10 +3,10 @@
 import sys
 
 def miniWc():
-
-    if len(sys.argv) == 2:
+    args_len = len(sys.argv)
+    if args_len == 2:
         file = sys.argv[1]
-    elif len(sys.argv) > 2:
+    elif args_len > 2:
         print("Only one file as argument.")
         exit()
     else:
@@ -19,15 +19,12 @@ def miniWc():
 
     try:
         with open(file, 'r') as f:
-
             for line in f:
                 words = line.split()
-
                 line_count += 1
                 word_count += len(words)
                 char_count += len(line)
-            print(str(line_count) + "\t" + str(word_count) + "\t" + str(char_count) + "\t" + file)
-
+            print("\t" +str(line_count) + "\t" + str(word_count) + "\t" + str(char_count) + "\t" + file)
     except FileNotFoundError:
             print("Error: file \"" + file + "\" not found.")
 
