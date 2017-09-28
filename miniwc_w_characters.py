@@ -14,17 +14,20 @@ def miniWc():
         exit()
 
     byte_count = 0
+    char_count = 0
     word_count = 0
     line_count = 0
 
+    #size = str(sys.getsizeof(file))
     try:
         with open(file, 'r') as f:
             for line in f:
                 words = line.split()
                 line_count += 1
                 word_count += len(words)
+                char_count += len(line)
                 byte_count += len(line.encode("utf8"))
-            print("\t" +str(line_count) + "\t" + str(word_count) + "\t" + str(byte_count) + "\t" + file)
+            print("\t" +str(line_count) + "\t" + str(word_count) + "\t" + str(char_count)+ "\t" + str(byte_count) + "\t" + file)
     except FileNotFoundError:
             print("Error: file \"" + file + "\" not found.")
 
