@@ -3,6 +3,7 @@
 import sys
 
 def miniWc():
+
     args_len = len(sys.argv)
     if args_len == 2:
         file = sys.argv[1]
@@ -13,12 +14,20 @@ def miniWc():
         print("No file argument was inserted.")
         exit()
 
+
+    document = docx.Document(file)
+    docText = '\n\n'.join([
+        paragraph.text.encode('utf-8') for paragraph in document.paragraphs
+    ])
+    print(docText)
+    exit()
+
     byte_count = 0
     word_count = 0
     line_count = 0
 
     try:
-        with open(file, 'r', encoding='utf8') as f:
+        with open(file) as f:
             for line in f:
                 words = line.split()
                 line_count += 1
@@ -26,8 +35,6 @@ def miniWc():
                 byte_count += len(line.encode("utf8"))
             print("\t" +str(line_count) + "\t" + str(word_count) + "\t" + str(byte_count) + "\t" + file)
     except FileNotFoundError:
-        print("Error: file \"" + file + "\" not found.")
-    except UnicodeDecodeError:
-        print("Error: cannot read file \"" + file + "\" correctly.")
+            print("Error: file \"" + file + "\" not found.")
 
 miniWc()

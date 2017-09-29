@@ -18,8 +18,14 @@ def miniWcComplete():
     word_count = 0
     line_count = 0
 
+    format = file[-4:]
+    if format in ['.pdf', 'docx', '.doc']:
+        encoding = 'latin1'
+    else:
+        encoding = "utf8"
+
     try:
-        with open(file, 'r') as f:
+        with open(file, 'r', encoding=encoding) as f:
             for line in f:
                 words = line.split()
                 line_count += 1
