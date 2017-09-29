@@ -2,7 +2,7 @@
 
 import sys
 
-def miniWc():
+def miniWcComplete():
     args_len = len(sys.argv)
     if args_len == 2:
         file = sys.argv[1]
@@ -25,9 +25,10 @@ def miniWc():
                 line_count += 1
                 word_count += len(words)
                 char_count += len(line)
-                byte_count += len(line.encode("utf8")) #Use of UTF-8 Encoding - test this script with htmlTest.html to see the difference
+                byte_count += len(line.encode("utf8"))
+                #Use of UTF-8 Encoding - test this script with htmlTest.html to see the difference, as often #Bytes = #chars in simple text files
             print("\t" +str(line_count) + "\t" + str(word_count) + "\t" + str(char_count)+ "\t" + str(byte_count) + "\t" + file)
     except FileNotFoundError:
             print("Error: file \"" + file + "\" not found.")
 
-miniWc()
+miniWcComplete()
