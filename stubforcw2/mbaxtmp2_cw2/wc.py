@@ -3,9 +3,9 @@
 #python3 wc.py <flags> <files>
 # 0       1     2       3     ...
 
-
-
-#TODO: Try 'wc --help' for more information.
+#TODO: Add "Try 'wc --help' for more information."
+#TODO: improve to accept flags in the form "-mcl..."
+#TODO: fix the bloody encoding thing
 
 import sys
 
@@ -17,7 +17,7 @@ def wc():
         allValidFlags=True
         fileList = []
         flagList = []
-        #TODO: improve to accept flags in the form "-mcl..."
+
         for param in sys.argv[1:]:
             if param[0] == '-':
                 curFlag = param[1:]
