@@ -1,0 +1,17 @@
+  $ wc -f
+wc: invalid option -- 'f'
+Try 'wc --help' for more information.
+
+  $ wc -m dfg
+wc: dfg: No such file or directory
+
+  $ wc -f dfg
+wc: invalid option -- 'f'
+Try 'wc --help' for more information.
+
+  $ wc -f -m dfg
+wc: invalid option -- 'f'
+Try 'wc --help' for more information.
+
+  $wc -c -m dfg
+wc: dfg: No such file or directory
