@@ -64,7 +64,7 @@ def wc():
                 doBytes = True if "c" in flagList else False
                 #doChars = True if "m" in flagList else False
 
-                if len(flagList) == 0: #no arguments = -wcl
+                if len(flagList) == 0: #no flags = -wcl
                     doLines = True
                     doWords = True
                     doBytes = True
