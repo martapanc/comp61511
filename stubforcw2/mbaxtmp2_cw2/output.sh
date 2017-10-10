@@ -10,4 +10,5 @@ done
 	output="$output"\\\\n\'
 #$output="${output}\\n"
 echo "$output"
-echo "$output" | pbcopy
+#echo "$output" | pbcopy  #MAC command
+echo "$output" | xclip   #Linux command

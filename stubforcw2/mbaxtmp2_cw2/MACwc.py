@@ -74,6 +74,12 @@ def wc():
                                     total_byte_count += byte_count
                     except FileNotFoundError:
                         print("wc: " + file + ": No such file or directory")
+                    except IsADirectoryError:
+                        print("wc: " + file + ": Is a directory") # replicate wc's behaviour if one of the args is a directory - ugly, I know
+                        if do_lines: print("\t0", end='')
+                        if do_words: print("\t0", end='')
+                        if do_bytes: print("\t0", end='')
+                        print("\t" + file)
                 if len(file_list) > 1:
                     if do_lines:
                         print("\t" + str(total_line_count), end='')
@@ -88,7 +94,7 @@ def check_flag(argument):
     switcher = {
         'l': True,
         'w': True,
-        'c': True
+        'c': True,
     }
     return switcher.get(argument, False)
 
