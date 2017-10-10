@@ -118,7 +118,7 @@ def count_words(file):
 def count_bytes(file):
     byte_count = 0
     for line in file:
-        byte_count += len(line.encode("utf8"))
+        byte_count += len(line.encode("utf-8"))
     file.seek(0)
     return byte_count
 
