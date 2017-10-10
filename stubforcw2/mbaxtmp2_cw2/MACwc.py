@@ -100,7 +100,8 @@ def invalid_option(arg):
 def count_lines(file):
     line_count = 0
     for line in file:
-        line_count += 1
+        if "\n" in line:
+            line_count += 1
     file.seek(0)  # restores pointer at the beginning of file
     return line_count
 
