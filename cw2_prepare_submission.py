@@ -22,6 +22,7 @@ def test_contents_if_necessary(path,stubs):
         return (contents(path).strip() != stubs[path.name].strip())
     else:
         return True
+
 def make_submission(assignment, username, dir, structure):
     dirp = Path(dir)
     target_name = '%s_%s'%(username, assignment)
@@ -37,11 +38,23 @@ def make_submission(assignment, username, dir, structure):
     for p, mark in structure:
         total += mark
         cur_file = dirp / p
-        if cur_file.exists() and test_contents_if_necessary(cur_file, stubs):
-            sub.write(str(cur_file), str(Path(target_name) / p))
-            possible += mark
+        if cur_file.is_dir():
+            # We're in testinputs!
+            dir_contents = [x for x in p.iterdir() if not x.name.startswith('.')]
+
+            if dir_contents:
+                for f in dir_contents:
+                    print("Writing ", f)
+                    sub.write(str(f), str(Path(target_name) / f))
+                possible += mark
+            else:
+                missing += '\t%s (0 out of %d points)\n' % (str(p), mark)
         else:
-            missing += '\t%s (0 out of %d points)\n' % (str(p), mark)
+            if cur_file.exists() and test_contents_if_necessary(cur_file, stubs):
+                sub.write(str(cur_file), str(Path(target_name) / p))
+                possible += mark
+            else:
+                missing += '\t%s (0 out of %d points)\n' % (str(p), mark)
     sub.close()
     if missing:
         print('''Your submission is missing (or you haven't edited) the following files:

@@ -21,21 +21,31 @@ def wc():
         file_list = []
         flag_list = set([])  # avoid adding the same flag more than once if present
 
-        for param in sys.argv[1:]:
-            if len(param)>2 and param[0] == '-' and param[1] == '-':
-                unrecognized(param)
-            elif param == '--':
-                not_implem()
+        arg_index = 1;
+
+        for param in sys.argv[1:]: # Process all arguments first
+            if param == '--':                               # If "--" is present not as first argument, all args after it are considered files
+                if arg_index == 1:
+                    not_implem()
+                else:
+                    file_list.extend(sys.argv[(arg_index+1):])  # So, add all args after the current index to the file_list and break the for loop
+                    break
+
             elif param[0] == '-':
-                cur_flag = param[1:]
-                for cf in cur_flag:  # check cases with more flags. E.g.: -wc -cl -lwc
-                    if check_flag(cf, param):
-                        flag_list.add(cf)
-                    else:
-                        all_valid_flags = False
-                        invalid(cf)
+                if len(param) > 1:
+                    cur_flag = param[1:]
+                    for cf in cur_flag:  # check cases with more flags. E.g.: -wc -cl -lwc
+                        if checkValidFlag(cf):
+                            flag_list.add(cf)
+                        else:
+                            all_valid_flags = False
+                            invalid(cf)
+                else:
+                    not_implem()
+                    
             else:
                 file_list.append(param)  # If not preceded by "-", handle it as a file
+            arg_index += 1
 
         if all_valid_flags:
             if len(file_list) == 0:
@@ -83,6 +93,8 @@ def wc():
                         if do_words: print("\t0", end='')
                         if do_bytes: print("\t0", end='')
                         print("\t" + file)
+                    except TypeError:
+                        print("wc: " + file + ": No such file or directory")
                 if len(file_list) > 1:
                     if do_lines:
                         print("\t" + str(total_line_count), end='')
@@ -90,8 +102,15 @@ def wc():
                         print("\t" + str(total_word_count), end='')
                     if do_bytes:
                         print("\t" + str(total_byte_count), end='')
-                    print("\t total")
+                    print("\ttotal")
 
+def checkValidFlag(argument):
+    switcher = {
+        'l': True,
+        'w': True,
+        'c': True
+    }
+    return switcher.get(argument, False)
 
 def check_flag(flag, param):
     if flag == '-':
@@ -102,20 +121,6 @@ def check_flag(flag, param):
         return True
     else:
         return False
-
-    # switcher = {
-    #     'l': True,
-    #     'w': True,
-    #     'c': True,
-    #     '-': False,
-    #     '--': False
-    # }
-    # return switcher.get(argument, False)
-
-
-#def invalid_option(arg):
-#    return "wc: invalid option -- '" + str(arg) + "'\nTry 'wc --help' for more information."
-
 
 def count_lines(file):
     line_count = 0
