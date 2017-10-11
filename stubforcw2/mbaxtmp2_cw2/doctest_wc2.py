@@ -36,6 +36,10 @@ b'*stdin not implemented yet*\\n'
 b'*stdin not implemented yet*\\n'
 >>> test('-wwc -lw -l -')
 b'*stdin not implemented yet*\\n'
+>>> test('--')
+b'*stdin not implemented yet*\\n'
+>>> test('-w -')
+b'*stdin not implemented yet*\\n'
 
 >>> test('testinputs')
 b'wc: testinputs: Is a directory\\n\\t0\\t0\\t0\\ttestinputs\\n'
@@ -49,6 +53,8 @@ b'\\t702\\t13620\\ttestinputs/strangerThings.txt\\nwc: testinputs: Is a director
 b'\\t21\\t1127\\t8483\\ttestinputs/chinese.txt\\nwc: testinputs: Is a directory\\n\\t0\\t0\\t0\\ttestinputs\\n\\t15\\t229\\t2488\\ttestinputs/htmlTest.html\\nwc: testinputs/: Is a directory\\n\\t0\\t0\\t0\\ttestinputs/\\n\\t36\\t1356\\t10971\\t total\\n'
 >>> test('-c testinputs/ ')
 b'wc: testinputs/: Is a directory\\n\\t0\\ttestinputs/\\n'
+>>> test('idk ')
+b'wc: idk: No such file or directory\\n'
 
 >>> test('noSuchFile.dat')
 b'wc: noSuchFile.dat: No such file or directory\\n'
@@ -69,10 +75,47 @@ b"wc: invalid option -- 'y'\\nTry 'wc --help' for more information.\\n"
 b"wc: invalid option -- 'q'\\nTry 'wc --help' for more information.\\n"
 >>> test('testinputs/test.txt testinputs/chinese.txt -w -x -f')
 b"wc: invalid option -- 'x'\\nTry 'wc --help' for more information.\\n"
+>>> test('-clg testinputs/test.txt testinputs/chinese.txt')
+b"wc: invalid option -- 'g'\\nTry 'wc --help' for more information.\\n"
+>>> test('-ql -')
+b"wc: invalid option -- 'q'\\nTry 'wc --help' for more information.\\n"
+>>> test('-w-')
+b"wc: invalid option -- '-'\\nTry 'wc --help' for more information.\\n"
+>>> test('-l--a')
+b"wc: invalid option -- '-'\\nTry 'wc --help' for more information.\\n"
+>>> test('-wc-37')
+b"wc: invalid option -- '-'\\nTry 'wc --help' for more information.\\n"
+>>> test('-wc--37')
+b"wc: invalid option -- '-'\\nTry 'wc --help' for more information.\\n"
+>>> test('--wc--3')
+b"wc: unrecognized option '--wc--3'\\nTry 'wc --help' for more information.\\n"
 
+>>> test('---')
+b"wc: unrecognized option '---'\\nTry 'wc --help' for more information.\\n"
+>>> test('- ---')
+b"wc: unrecognized option '---'\\nTry 'wc --help' for more information.\\n"
+>>> test('--- -')
+b"wc: unrecognized option '---'\\nTry 'wc --help' for more information.\\n"
+>>> test('----')
+b"wc: unrecognized option '----'\\nTry 'wc --help' for more information.\\n"
+>>> test('---w')
+b"wc: unrecognized option '---w'\\nTry 'wc --help' for more information.\\n"
+>>> test('--w--')
+b"wc: unrecognized option '--w--'\\nTry 'wc --help' for more information.\\n"
+>>> test('--w--23')
+b"wc: unrecognized option '--w--23'\\nTry 'wc --help' for more information.\\n"
+>>> test('--c-')
+b"wc: unrecognized option '--c-'\\nTry 'wc --help' for more information.\\n"
+>>> test('--w--23')
+b"wc: unrecognized option '--w--23'\\nTry 'wc --help' for more information.\\n"
+>>> test('--@')
+b"wc: unrecognized option '--@'\\nTry 'wc --help' for more information.\\n"
 
->>> test('t.txt')
-b'\\t6\\t5\\t43\\tt.txt\\n'
+>>> test('.--@')
+b'wc: .--@: No such file or directory\\n'
+>>> test('.--@')
+b'wc: .--@: No such file or directory\\n'
+
 
 >>> test('testinputs/test.txt -w')
 b'\\t74\\ttestinputs/test.txt\\n'
@@ -83,16 +126,9 @@ b'\\t10\\ttestinputs/test.txt\\n'
 
 >>> test('testinputs/test.txt testinputs/inferno2.txt')
 b'\\t10\\t74\\t373\\ttestinputs/test.txt\\n\\t14920\\t102197\\t562492\\ttestinputs/inferno2.txt\\n\\t14930\\t102271\\t562865\\t total\\n'
+>>> test('wc.py doctest_wc.py compare.sh')
+b'\\t144\\t528\\t5371\\twc.py\\n\\t24\\t70\\t666\\tdoctest_wc.py\\n\\t6\\t13\\t67\\tcompare.sh\\n\\t174\\t611\\t6104\\t total\\n'
 
->>> test('t.txt wc.py -w')
-b'\\t5\\tt.txt\\n\\t528\\twc.py\\n\\t533\\t total\\n'
->>> test('t.txt wc.py -c')
-b'\\t43\\tt.txt\\n\\t5371\\twc.py\\n\\t5414\\t total\\n'
->>> test('t.txt wc.py -l')
-b'\\t6\\tt.txt\\n\\t144\\twc.py\\n\\t150\\t total\\n'
-
->>> test('t.txt wc.py test.py')
-b'\\t6\\t5\\t43\\tt.txt\\n\\t144\\t528\\t5371\\twc.py\\n\\t62\\t172\\t1511\\ttest.py\\n\\t212\\t705\\t6925\\t total\\n'
 
 
 >>> test('testinputs/arabic.txt')
