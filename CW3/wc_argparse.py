@@ -1,6 +1,7 @@
 # Created by mbaxtmp2 on 17/10/17
 
 # TODO: --
+# TODO: prefix bug
 
 import sys
 import argparse
@@ -15,16 +16,18 @@ def wc_argparse():
     parser.add_argument('FILE', help='With no FILE, or when FILE is -, read standard input.', nargs='+')
 
     arg_list = []
+
     for arg in sys.argv[1:]:
         if arg[0] == '-' and len(arg) > 1: #temporarely treat "-" as a file
             arg_list.insert(0, arg)
         else:
             arg_list.append(arg)
-    print(arg_list)
+#    print(arg_list)
 
     args, unknown = parser.parse_known_args(arg_list)
-    print(args)
-    print(unknown)
+
+#    print(args)
+#    print(unknown)
 
     for arg in unknown:
         if len(arg) > 1 and arg[0] == '-' and arg[1].isalpha():
