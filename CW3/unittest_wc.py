@@ -162,6 +162,9 @@ class TestWC(unittest.TestCase):
         self.assertRaises(SystemExit, all_valid_args, ['-c -w -l'])
         self.assertRaises(SystemExit, all_valid_args, ['-wwc -lw -l -'])
 
+    def test_compute_result(self):
+        self.assertEqual(compute_result(['w', 'c', 'l'], ['testinputs/arabic.txt']), "\t19\t485\t4898\ttestinputs/arabic.txt\n")
+        self.assertEqual(compute_result([], ['testinputs/arabic.txt']), "\t19\t485\t4898\ttestinputs/arabic.txt\n")
 
 if __name__ == '__main__':
     unittest.main()

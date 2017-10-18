@@ -13,11 +13,10 @@ def wc():
         not_implem()
     else:
         file_list = []
-        flag_list = [] # avoid adding the same flag more than once if present
+        flag_list = []
         flags_are_valid = True
 
         flags_are_valid, flag_list, file_list = all_valid_args(sys.argv[1:])
-
         if flags_are_valid:
             print(compute_result(flag_list, file_list))
 
@@ -26,6 +25,7 @@ def compute_result(flag_list, file_list):
     if len(file_list) == 0:
         not_implem()
     else:
+        resultString = ''
         total_line_count = 0
         total_word_count = 0
         total_byte_count = 0
@@ -44,14 +44,14 @@ def compute_result(flag_list, file_list):
                 with open(file, 'r', encoding='utf8') as f:
                     if do_lines:
                         line_count = count_lines(f)
-                        print("\t" + str(line_count), end='')
+                        resultString += "\t" + str(line_count)
                     if do_words:
                         word_count = count_words(f)
-                        print("\t" + str(word_count), end='')
+                        resultString += "\t" + str(word_count)
                     if do_bytes:
                         byte_count = count_bytes(f)
-                        print("\t" + str(byte_count), end='')
-                    print("\t" + file)
+                        resultString += "\t" + str(byte_count)
+                    resultString += "\t" + file + "\n"
 
                     if len(file_list) > 1:
                         if do_lines:
@@ -61,21 +61,22 @@ def compute_result(flag_list, file_list):
                         if do_bytes:
                             total_byte_count += byte_count
             except FileNotFoundError:
-                print("wc: " + file + ": No such file or directory")
+                resultString += "wc: " + file + ": No such file or directory\n"
             except IsADirectoryError:
-                print("wc: " + file + ": Is a directory") # replicate wc's behaviour if one of the args is a directory - ugly, I know
-                if do_lines: print("\t0", end='')
-                if do_words: print("\t0", end='')
-                if do_bytes: print("\t0", end='')
-                print("\t" + file)
+                resultString += "wc: " + file + ": Is a directory\n" # replicate wc's behaviour if one of the args is a directory - ugly, I know
+                if do_lines: resultString += "\t0"
+                if do_words: resultString += "\t0"
+                if do_bytes: resultString += "\t0"
+                resultString += "\t" + file + "\n"
         if len(file_list) > 1:
             if do_lines:
-                print("\t" + str(total_line_count), end='')
+                resultString += "\t" + str(total_line_count)
             if do_words:
-                print("\t" + str(total_word_count), end='')
+                resultString += "\t" + str(total_word_count)
             if do_bytes:
-                print("\t" + str(total_byte_count), end='')
-            print("\ttotal")
+                resultString += "\t" + str(total_byte_count)
+            resultString += "\ttotal\n"
+        return resultString
 
 
 def check_flag(flag):
