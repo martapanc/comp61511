@@ -2,20 +2,20 @@
 >>> import subprocess
 
 >>> def test(input):
-...     return subprocess.check_output("python3 wc_argparse.py " + input, shell=True)
+...     return subprocess.check_output("python3 wc.py " + input, shell=True)
 
 >>> test('')
 b'*stdin not implemented yet*\\n'
 >>> test(' ')
 b'*stdin not implemented yet*\\n'
 >>> test('-')
-b'*stdin not implemented yet*\\n'
+b'wc: -: No such file or directory\\n'
 >>> test('--')
 b'*stdin not implemented yet*\\n'
 >>> test('- -')
-b'*stdin not implemented yet*\\n'
+b'wc: -: No such file or directory\\nwc: -: No such file or directory\\n\\t0\\t0\\t0\\ttotal\\n'
 >>> test('- -   - ')
-b'*stdin not implemented yet*\\n'
+b'wc: -: No such file or directory\\nwc: -: No such file or directory\\nwc: -: No such file or directory\\n\\t0\\t0\\t0\\ttotal\\n'
 >>> test('-w')
 b'*stdin not implemented yet*\\n'
 >>> test('-c')
@@ -33,15 +33,15 @@ b'*stdin not implemented yet*\\n'
 >>> test('-lcw -ll -w')
 b'*stdin not implemented yet*\\n'
 >>> test('-cl -')
-b'*stdin not implemented yet*\\n'
+b'wc: -: No such file or directory\\n'
 >>> test('-c -w -l')
 b'*stdin not implemented yet*\\n'
 >>> test('-wwc -lw -l -')
-b'*stdin not implemented yet*\\n'
+b'wc: -: No such file or directory\\n'
 >>> test('--')
 b'*stdin not implemented yet*\\n'
 >>> test('-w -')
-b'*stdin not implemented yet*\\n'
+b'wc: -: No such file or directory\\n'
 
 >>> test('testinputs')
 b'wc: testinputs: Is a directory\\n\\t0\\t0\\t0\\ttestinputs\\n'
@@ -50,7 +50,7 @@ b'wc: testinputs/: Is a directory\\n\\t0\\t0\\t0\\ttestinputs/\\n'
 >>> test('testinputs/ testinputs/die.java')
 b'wc: testinputs/: Is a directory\\n\\t0\\t0\\t0\\ttestinputs/\\n\\t126\\t533\\t3608\\ttestinputs/die.java\\n\\t126\\t533\\t3608\\ttotal\\n'
 >>> test('testinputs/strangerThings.txt testinputs testinputs/htmlTest.html -wc')
-b'\\t702\\t13620\\ttestinputs/strangerThings.txt\\nwc: testinputs: Is a directory\\n\\t0\\t0\\ttestinputs\\n\\t229\\t2488\\ttestinputs/htmlTest.html\\n\\t931\\t16108\\ttotal\\n'
+b'\\t536\\t11618\\ttestinputs/strangerThings.txt\\nwc: testinputs: Is a directory\\n\\t0\\t0\\ttestinputs\\n\\t229\\t2488\\ttestinputs/htmlTest.html\\n\\t765\\t14106\\ttotal\\n'
 >>> test('testinputs/chinese.txt testinputs testinputs/htmlTest.html testinputs/')
 b'\\t21\\t1127\\t8483\\ttestinputs/chinese.txt\\nwc: testinputs: Is a directory\\n\\t0\\t0\\t0\\ttestinputs\\n\\t15\\t229\\t2488\\ttestinputs/htmlTest.html\\nwc: testinputs/: Is a directory\\n\\t0\\t0\\t0\\ttestinputs/\\n\\t36\\t1356\\t10971\\ttotal\\n'
 >>> test('-c testinputs/ ')
@@ -131,7 +131,7 @@ b'\\t10\\t74\\t373\\ttestinputs/test.txt\\n\\t14920\\t102197\\t562492\\ttestinpu
 >>> test('-wwc testinputs/die.java testinputs/inferno2.txt -cw')
 b'\\t533\\t3608\\ttestinputs/die.java\\n\\t102197\\t562492\\ttestinputs/inferno2.txt\\n\\t102730\\t566100\\ttotal\\n'
 >>> test('-l testinputs/oneLine.txt testinputs/strangerThings.txt testinputs/inferno2.txt -l -l')
-b'\\t1\\ttestinputs/oneLine.txt\\n\\t117\\ttestinputs/strangerThings.txt\\n\\t14920\\ttestinputs/inferno2.txt\\n\\t15038\\ttotal\\n'
+b'\\t1\\ttestinputs/oneLine.txt\\n\\t109\\ttestinputs/strangerThings.txt\\n\\t14920\\ttestinputs/inferno2.txt\\n\\t15030\\ttotal\\n'
 >>> test(' testinputs/arabic.txt -cwlc testinputs/emoji.txt testinputs/test.txt testinputs/inferno2.txt -c -c -c -c ')
 b'\\t19\\t485\\t4898\\ttestinputs/arabic.txt\\n\\t256\\t854\\t5401\\ttestinputs/emoji.txt\\n\\t10\\t74\\t373\\ttestinputs/test.txt\\n\\t14920\\t102197\\t562492\\ttestinputs/inferno2.txt\\n\\t15205\\t103610\\t573164\\ttotal\\n'
 
@@ -354,35 +354,35 @@ b'\\t1\\t6\\t37\\ttestinputs/oneLine.txt\\n\\t1\\t6\\t37\\ttestinputs/oneLine.tx
 b'\\t6\\t37\\ttestinputs/oneLine.txt\\n\\t6\\t37\\ttestinputs/oneLine.txt\\n\\t6\\t37\\ttestinputs/oneLine.txt\\n\\t6\\t37\\ttestinputs/oneLine.txt\\n\\t24\\t148\\ttotal\\n'
 
 >>> test('testinputs/strangerThings.txt')
-b'\\t117\\t702\\t13620\\ttestinputs/strangerThings.txt\\n'
+b'\\t109\\t536\\t11618\\ttestinputs/strangerThings.txt\\n'
 >>> test('-w testinputs/strangerThings.txt')
-b'\\t702\\ttestinputs/strangerThings.txt\\n'
+b'\\t536\\ttestinputs/strangerThings.txt\\n'
 >>> test('-l testinputs/strangerThings.txt')
-b'\\t117\\ttestinputs/strangerThings.txt\\n'
+b'\\t109\\ttestinputs/strangerThings.txt\\n'
 >>> test('-c testinputs/strangerThings.txt')
-b'\\t13620\\ttestinputs/strangerThings.txt\\n'
+b'\\t11618\\ttestinputs/strangerThings.txt\\n'
 >>> test('-cw testinputs/strangerThings.txt')
-b'\\t702\\t13620\\ttestinputs/strangerThings.txt\\n'
+b'\\t536\\t11618\\ttestinputs/strangerThings.txt\\n'
 >>> test('-cl testinputs/strangerThings.txt')
-b'\\t117\\t13620\\ttestinputs/strangerThings.txt\\n'
+b'\\t109\\t11618\\ttestinputs/strangerThings.txt\\n'
 >>> test('-wl testinputs/strangerThings.txt')
-b'\\t117\\t702\\ttestinputs/strangerThings.txt\\n'
+b'\\t109\\t536\\ttestinputs/strangerThings.txt\\n'
 >>> test('-wc testinputs/strangerThings.txt')
-b'\\t702\\t13620\\ttestinputs/strangerThings.txt\\n'
+b'\\t536\\t11618\\ttestinputs/strangerThings.txt\\n'
 >>> test('-lc testinputs/strangerThings.txt')
-b'\\t117\\t13620\\ttestinputs/strangerThings.txt\\n'
+b'\\t109\\t11618\\ttestinputs/strangerThings.txt\\n'
 >>> test('-lw testinputs/strangerThings.txt')
-b'\\t117\\t702\\ttestinputs/strangerThings.txt\\n'
+b'\\t109\\t536\\ttestinputs/strangerThings.txt\\n'
 >>> test('-clw testinputs/strangerThings.txt')
-b'\\t117\\t702\\t13620\\ttestinputs/strangerThings.txt\\n'
+b'\\t109\\t536\\t11618\\ttestinputs/strangerThings.txt\\n'
 >>> test('-wclwcllc testinputs/strangerThings.txt')
-b'\\t117\\t702\\t13620\\ttestinputs/strangerThings.txt\\n'
+b'\\t109\\t536\\t11618\\ttestinputs/strangerThings.txt\\n'
 >>> test('-w testinputs/strangerThings.txt -c testinputs/strangerThings.txt')
-b'\\t702\\t13620\\ttestinputs/strangerThings.txt\\n\\t702\\t13620\\ttestinputs/strangerThings.txt\\n\\t1404\\t27240\\ttotal\\n'
+b'\\t536\\t11618\\ttestinputs/strangerThings.txt\\n\\t536\\t11618\\ttestinputs/strangerThings.txt\\n\\t1072\\t23236\\ttotal\\n'
 >>> test('-l testinputs/strangerThings.txt -wc testinputs/strangerThings.txt -wl -c testinputs/strangerThings.txt')
-b'\\t117\\t702\\t13620\\ttestinputs/strangerThings.txt\\n\\t117\\t702\\t13620\\ttestinputs/strangerThings.txt\\n\\t117\\t702\\t13620\\ttestinputs/strangerThings.txt\\n\\t351\\t2106\\t40860\\ttotal\\n'
+b'\\t109\\t536\\t11618\\ttestinputs/strangerThings.txt\\n\\t109\\t536\\t11618\\ttestinputs/strangerThings.txt\\n\\t109\\t536\\t11618\\ttestinputs/strangerThings.txt\\n\\t327\\t1608\\t34854\\ttotal\\n'
 >>> test('testinputs/strangerThings.txt -w testinputs/strangerThings.txt testinputs/strangerThings.txt -ww -c testinputs/strangerThings.txt')
-b'\\t702\\t13620\\ttestinputs/strangerThings.txt\\n\\t702\\t13620\\ttestinputs/strangerThings.txt\\n\\t702\\t13620\\ttestinputs/strangerThings.txt\\n\\t702\\t13620\\ttestinputs/strangerThings.txt\\n\\t2808\\t54480\\ttotal\\n'
+b'\\t536\\t11618\\ttestinputs/strangerThings.txt\\n\\t536\\t11618\\ttestinputs/strangerThings.txt\\n\\t536\\t11618\\ttestinputs/strangerThings.txt\\n\\t536\\t11618\\ttestinputs/strangerThings.txt\\n\\t2144\\t46472\\ttotal\\n'
 
 >>> test('testinputs/test2.txt')
 b'\\t8\\t22\\t141\\ttestinputs/test2.txt\\n'
@@ -447,7 +447,7 @@ b'\\t10\\t74\\t373\\ttestinputs/test.txt\\n\\t10\\t74\\t373\\ttestinputs/test.tx
 b'\\t74\\t373\\ttestinputs/test.txt\\n\\t74\\t373\\ttestinputs/test.txt\\n\\t74\\t373\\ttestinputs/test.txt\\n\\t74\\t373\\ttestinputs/test.txt\\n\\t296\\t1492\\ttotal\\n'
 
 >>> test('testinputs/arabic.txt testinputs/chinese.txt testinputs/die.java testinputs/emoji.txt testinputs/htmlTest.html testinputs/inferno2.txt testinputs/oneLine.txt testinputs/strangerThings.txt testinputs/test2.txt testinputs/test.txt')
-b'\\t19\\t485\\t4898\\ttestinputs/arabic.txt\\n\\t21\\t1127\\t8483\\ttestinputs/chinese.txt\\n\\t126\\t533\\t3608\\ttestinputs/die.java\\n\\t256\\t854\\t5401\\ttestinputs/emoji.txt\\n\\t15\\t229\\t2488\\ttestinputs/htmlTest.html\\n\\t14920\\t102197\\t562492\\ttestinputs/inferno2.txt\\n\\t1\\t6\\t37\\ttestinputs/oneLine.txt\\n\\t117\\t702\\t13620\\ttestinputs/strangerThings.txt\\n\\t8\\t22\\t141\\ttestinputs/test2.txt\\n\\t10\\t74\\t373\\ttestinputs/test.txt\\n\\t15493\\t106229\\t601541\\ttotal\\n'
+b'\\t19\\t485\\t4898\\ttestinputs/arabic.txt\\n\\t21\\t1127\\t8483\\ttestinputs/chinese.txt\\n\\t126\\t533\\t3608\\ttestinputs/die.java\\n\\t256\\t854\\t5401\\ttestinputs/emoji.txt\\n\\t15\\t229\\t2488\\ttestinputs/htmlTest.html\\n\\t14920\\t102197\\t562492\\ttestinputs/inferno2.txt\\n\\t1\\t6\\t37\\ttestinputs/oneLine.txt\\n\\t109\\t536\\t11618\\ttestinputs/strangerThings.txt\\n\\t8\\t22\\t141\\ttestinputs/test2.txt\\n\\t10\\t74\\t373\\ttestinputs/test.txt\\n\\t15485\\t106063\\t599539\\ttotal\\n'
 
 """
 

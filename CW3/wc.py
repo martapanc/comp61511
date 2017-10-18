@@ -21,7 +21,7 @@ def wc():
                 unrecognized(param)
             elif param == '--':
                 not_implem()
-            elif param[0] == '-':
+            elif param[0] == '-' and len(param)>1:
                 cur_flag = param[1:]
                 for cf in cur_flag:  # check cases with more flags. E.g.: -wc -cl -lwc
                     if check_flag(cf, param):

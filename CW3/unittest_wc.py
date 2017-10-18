@@ -23,6 +23,27 @@ class TestWC(unittest.TestCase):
     def setUp(self):
         pass
 
+    def test_common_inputs(self):
+        self.assertEqual('wc','*stdin not implemented yet*\\n')
+        self.assertEqual('wc ','*stdin not implemented yet*\\n')
+        self.assertEqual('wc -','wc: -: No such file or directory\\n')
+        self.assertEqual('--','*stdin not implemented yet*\\n')
+        self.assertEqual('- -','wc: -: No such file or directory\\nwc: -: No such file or directory\\n\\t0\\t0\\t0\\ttotal\\n')
+        self.assertEqual('- -   - ','wc: -: No such file or directory\\nwc: -: No such file or directory\\nwc: -: No such file or directory\\n\\t0\\t0\\t0\\ttotal\\n')
+        self.assertEqual('-w','*stdin not implemented yet*\\n')
+        self.assertEqual('-c','*stdin not implemented yet*\\n')
+        self.assertEqual('-l','*stdin not implemented yet*\\n')
+        self.assertEqual('-wc','*stdin not implemented yet*\\n')
+        self.assertEqual('-cl','*stdin not implemented yet*\\n')
+        self.assertEqual('-wl ','*stdin not implemented yet*\\n')
+        self.assertEqual('-wcl','*stdin not implemented yet*\\n')
+        self.assertEqual('-lcw -ll -w','*stdin not implemented yet*\\n')
+        self.assertEqual('-cl -','wc: -: No such file or directory\\n')
+        self.assertEqual('-c -w -l','*stdin not implemented yet*\\n')
+        self.assertEqual('-wwc -lw -l -','wc: -: No such file or directory\\n')
+        self.assertEqual('--','*stdin not implemented yet*\\n')
+        self.assertEqual('-w -','wc: -: No such file or directory\\n')
+
     def test_count_lines(self):
 #        self.assertEqual(count_lines(f1), 140)
         self.assertEqual(count_lines(f2), 6)
@@ -84,16 +105,6 @@ class TestWC(unittest.TestCase):
         self.assertEqual(count_chars(f13), 373)
 
 
-    def test_isupper(self):
-        self.assertTrue('FOO'.isupper())
-        self.assertFalse('Foo'.isupper())
-
-    def test_split(self):
-        s = 'hello world'
-        self.assertEqual(s.split(), ['hello', 'world'])
-        # check that s.split fails when the separator is not a string
-        with self.assertRaises(TypeError):
-            s.split(2)
 
 if __name__ == '__main__':
     unittest.main()
