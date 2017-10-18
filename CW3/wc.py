@@ -87,7 +87,6 @@ def wc():
                         print("\t" + str(total_byte_count), end='')
                     print("\ttotal")
 
-
 def check_flag(flag, param):
     if flag == '-':
         return invalid(flag)

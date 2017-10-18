@@ -1,7 +1,7 @@
 import unittest
 
-from wc import *
-from wc_argparse import wc_argparse
+from wc_unit import *
+#from wc_argparse import *
 
 #f1 = open('wc.py', 'r')
 f2 = open("compare.sh", 'r')
@@ -23,29 +23,29 @@ class TestWC(unittest.TestCase):
     def setUp(self):
         pass
 
-    def test_common_inputs(self):
-        self.assertEqual('wc','*stdin not implemented yet*\\n')
-        self.assertEqual('wc ','*stdin not implemented yet*\\n')
-        self.assertEqual('wc -','wc: -: No such file or directory\\n')
-        self.assertEqual('--','*stdin not implemented yet*\\n')
-        self.assertEqual('- -','wc: -: No such file or directory\\nwc: -: No such file or directory\\n\\t0\\t0\\t0\\ttotal\\n')
-        self.assertEqual('- -   - ','wc: -: No such file or directory\\nwc: -: No such file or directory\\nwc: -: No such file or directory\\n\\t0\\t0\\t0\\ttotal\\n')
-        self.assertEqual('-w','*stdin not implemented yet*\\n')
-        self.assertEqual('-c','*stdin not implemented yet*\\n')
-        self.assertEqual('-l','*stdin not implemented yet*\\n')
-        self.assertEqual('-wc','*stdin not implemented yet*\\n')
-        self.assertEqual('-cl','*stdin not implemented yet*\\n')
-        self.assertEqual('-wl ','*stdin not implemented yet*\\n')
-        self.assertEqual('-wcl','*stdin not implemented yet*\\n')
-        self.assertEqual('-lcw -ll -w','*stdin not implemented yet*\\n')
-        self.assertEqual('-cl -','wc: -: No such file or directory\\n')
-        self.assertEqual('-c -w -l','*stdin not implemented yet*\\n')
-        self.assertEqual('-wwc -lw -l -','wc: -: No such file or directory\\n')
-        self.assertEqual('--','*stdin not implemented yet*\\n')
-        self.assertEqual('-w -','wc: -: No such file or directory\\n')
+    # def test_common_inputs(self):
+    #     self.assertEqual('wc','*stdin not implemented yet*\\n')
+    #     self.assertEqual('wc ','*stdin not implemented yet*\\n')
+    #     self.assertEqual('wc -','wc: -: No such file or directory\\n')
+    #     self.assertEqual('--','*stdin not implemented yet*\\n')
+    #     self.assertEqual('- -','wc: -: No such file or directory\\nwc: -: No such file or directory\\n\\t0\\t0\\t0\\ttotal\\n')
+    #     self.assertEqual('- -   - ','wc: -: No such file or directory\\nwc: -: No such file or directory\\nwc: -: No such file or directory\\n\\t0\\t0\\t0\\ttotal\\n')
+    #     self.assertEqual('-w','*stdin not implemented yet*\\n')
+    #     self.assertEqual('-c','*stdin not implemented yet*\\n')
+    #     self.assertEqual('-l','*stdin not implemented yet*\\n')
+    #     self.assertEqual('-wc','*stdin not implemented yet*\\n')
+    #     self.assertEqual('-cl','*stdin not implemented yet*\\n')
+    #     self.assertEqual('-wl ','*stdin not implemented yet*\\n')
+    #     self.assertEqual('-wcl','*stdin not implemented yet*\\n')
+    #     self.assertEqual('-lcw -ll -w','*stdin not implemented yet*\\n')
+    #     self.assertEqual('-cl -','wc: -: No such file or directory\\n')
+    #     self.assertEqual('-c -w -l','*stdin not implemented yet*\\n')
+    #     self.assertEqual('-wwc -lw -l -','wc: -: No such file or directory\\n')
+    #     self.assertEqual('--','*stdin not implemented yet*\\n')
+    #     self.assertEqual('-w -','wc: -: No such file or directory\\n')
 
     def test_count_lines(self):
-#        self.assertEqual(count_lines(f1), 140)
+        #self.assertEqual(count_lines(f1), 140)
         self.assertEqual(count_lines(f2), 6)
         self.assertEqual(count_lines(f3), 19)
         self.assertEqual(count_lines(f4), 21)
@@ -60,7 +60,7 @@ class TestWC(unittest.TestCase):
         self.assertEqual(count_lines(f13), 10)
 
     def test_count_words(self):
-#        self.assertEqual(count_words(f1), 454)
+        # self.assertEqual(count_words(f1), 454)
         self.assertEqual(count_words(f2), 15)
         self.assertEqual(count_words(f3), 485)
         self.assertEqual(count_words(f4), 1127)
@@ -75,7 +75,7 @@ class TestWC(unittest.TestCase):
         self.assertEqual(count_words(f13), 74)
 
     def test_count_bytes(self):
-#        self.assertEqual(count_bytes(f1), 4733)
+        #self.assertEqual(count_bytes(f1), 4733)
         self.assertEqual(count_bytes(f2), 89)
         self.assertEqual(count_bytes(f3), 4898)
         self.assertEqual(count_bytes(f4), 8483)
@@ -90,7 +90,7 @@ class TestWC(unittest.TestCase):
         self.assertEqual(count_bytes(f13), 373)
 
     def test_count_chars(self):
-#        self.assertEqual(count_chars(f1), 4733)
+        #self.assertEqual(count_chars(f1), 4733)
         self.assertEqual(count_chars(f2), 89)
         self.assertEqual(count_chars(f3), 2750)
         self.assertEqual(count_chars(f4), 3721)
@@ -104,6 +104,63 @@ class TestWC(unittest.TestCase):
         self.assertEqual(count_chars(f12), 133)
         self.assertEqual(count_chars(f13), 373)
 
+    def test_check_flags(self):
+        self.assertTrue(check_flag("w"))
+        self.assertTrue(check_flag("c"))
+        self.assertTrue(check_flag("l"))
+        self.assertFalse(check_flag("ç"))
+        self.assertFalse(check_flag("q"))
+        self.assertFalse(check_flag("e"))
+        self.assertFalse(check_flag("r"))
+        self.assertFalse(check_flag("t"))
+        self.assertFalse(check_flag("y"))
+        self.assertFalse(check_flag("u"))
+        self.assertFalse(check_flag("i"))
+        self.assertFalse(check_flag("o"))
+        self.assertFalse(check_flag("p"))
+        self.assertFalse(check_flag("n"))
+        self.assertFalse(check_flag("x"))
+        self.assertFalse(check_flag("@"))
+        self.assertFalse(check_flag("%"))
+        self.assertFalse(check_flag("1"))
+        self.assertFalse(check_flag("0"))
+        self.assertFalse(check_flag("("))
+        self.assertFalse(check_flag("\""))
+        self.assertFalse(check_flag("0"))
+        self.assertFalse(check_flag(" "))
+        self.assertFalse(check_flag("wc"))
+        self.assertFalse(check_flag("wlc"))
+        self.assertFalse(check_flag("wa"))
+        self.assertFalse(check_flag("."))
+
+    def test_all_valid_args(self):
+        self.assertEqual(all_valid_args(['-w', 'file.txt']), (True, {'w'}, ['file.txt']))
+        self.assertEqual(all_valid_args(['-w', 'file.txt', '-c']), (True, {'w', 'c'}, ['file.txt']))
+        self.assertEqual(all_valid_args(['-c', '-w', 'file.txt']), (True, {'w', 'c'}, ['file.txt']))
+        self.assertEqual(all_valid_args(['-l', '-w', '-c', 'file.txt']), (True, {'w', 'c', 'l'}, ['file.txt']))
+        self.assertEqual(all_valid_args(['-w', '-']), (True, {'w'}, ['-']))
+        self.assertEqual(all_valid_args(['-w', 'file.txt', '-']), (True, {'w'}, ['file.txt', '-']))
+        self.assertEqual(all_valid_args(['-w', 'file.txt', '-']), (True, {'w'}, ['file.txt', '-']))
+        self.assertEqual(all_valid_args(['-w', 'file.txt', '-']), (True, {'w'}, ['file.txt', '-']))
+        self.assertEqual(all_valid_args(['-w', 'file.txt', '-']), (True, {'w'}, ['file.txt', '-']))
+        self.assertEqual(all_valid_args(['-w', 'file.txt', '-']), (True, {'w'}, ['file.txt', '-']))
+
+        self.assertRaises(SystemExit, all_valid_args, ['-a', 'file.txt'])
+        self.assertRaises(SystemExit, all_valid_args, ['-k', 'file.txt'])
+        self.assertRaises(SystemExit, all_valid_args, ['- -', 'file.txt'])
+        self.assertRaises(SystemExit, all_valid_args, ['--', 'file.txt'])
+        self.assertRaises(SystemExit, all_valid_args, ['---', 'file.txt'])
+        self.assertRaises(SystemExit, all_valid_args, ['--w-', 'file.txt'])
+        self.assertRaises(SystemExit, all_valid_args, ['-a -w', 'file.txt'])
+        self.assertRaises(SystemExit, all_valid_args, ['- -   - ', 'file.txt'])
+        self.assertRaises(SystemExit, all_valid_args, ['-wc -l -a.', 'file.txt'])
+        self.assertRaises(SystemExit, all_valid_args, ['-.', 'file.txt'])
+        self.assertRaises(SystemExit, all_valid_args, ['-l -@', 'file.txt'])
+        self.assertRaises(SystemExit, all_valid_args, ['-wcl -'])
+        self.assertRaises(SystemExit, all_valid_args, ['-lcw -ll -w'])
+        self.assertRaises(SystemExit, all_valid_args, ['-cl -'])
+        self.assertRaises(SystemExit, all_valid_args, ['-c -w -l'])
+        self.assertRaises(SystemExit, all_valid_args, ['-wwc -lw -l -'])
 
 
 if __name__ == '__main__':
