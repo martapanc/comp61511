@@ -143,4 +143,5 @@ def not_implem():
     print("*stdin not implemented yet*")
     exit()
 
-wc_argparse()
+if __name__ == "__main__":
+    wc_argparse()
