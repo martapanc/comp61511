@@ -2,7 +2,7 @@
 >>> import subprocess
 
 >>> def test(input):
-...     return subprocess.check_output("python3 wc.py " + input, shell=True)
+...     return subprocess.check_output("python3 wc_cw2.py " + input, shell=True)
 
 >>> test('')
 b'*stdin not implemented yet*\\n'

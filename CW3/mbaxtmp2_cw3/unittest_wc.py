@@ -4,7 +4,7 @@ from wc_unit import *
 #from wc_argparse import *
 
 #f1 = open('wc.py', 'r')
-f2 = open("compare.sh", 'r')
+#f2 = open("compare.sh", 'r')
 f3 = open("testinputs/arabic.txt", 'r')
 f4 = open("testinputs/chinese.txt", 'r')
 f5 = open("testinputs/die.java", 'r')
@@ -23,30 +23,9 @@ class TestWC(unittest.TestCase):
     def setUp(self):
         pass
 
-    # def test_common_inputs(self):
-    #     self.assertEqual('wc','*stdin not implemented yet*\\n')
-    #     self.assertEqual('wc ','*stdin not implemented yet*\\n')
-    #     self.assertEqual('wc -','wc: -: No such file or directory\\n')
-    #     self.assertEqual('--','*stdin not implemented yet*\\n')
-    #     self.assertEqual('- -','wc: -: No such file or directory\\nwc: -: No such file or directory\\n\\t0\\t0\\t0\\ttotal\\n')
-    #     self.assertEqual('- -   - ','wc: -: No such file or directory\\nwc: -: No such file or directory\\nwc: -: No such file or directory\\n\\t0\\t0\\t0\\ttotal\\n')
-    #     self.assertEqual('-w','*stdin not implemented yet*\\n')
-    #     self.assertEqual('-c','*stdin not implemented yet*\\n')
-    #     self.assertEqual('-l','*stdin not implemented yet*\\n')
-    #     self.assertEqual('-wc','*stdin not implemented yet*\\n')
-    #     self.assertEqual('-cl','*stdin not implemented yet*\\n')
-    #     self.assertEqual('-wl ','*stdin not implemented yet*\\n')
-    #     self.assertEqual('-wcl','*stdin not implemented yet*\\n')
-    #     self.assertEqual('-lcw -ll -w','*stdin not implemented yet*\\n')
-    #     self.assertEqual('-cl -','wc: -: No such file or directory\\n')
-    #     self.assertEqual('-c -w -l','*stdin not implemented yet*\\n')
-    #     self.assertEqual('-wwc -lw -l -','wc: -: No such file or directory\\n')
-    #     self.assertEqual('--','*stdin not implemented yet*\\n')
-    #     self.assertEqual('-w -','wc: -: No such file or directory\\n')
-
     def test_count_lines(self):
         #self.assertEqual(count_lines(f1), 140)
-        self.assertEqual(count_lines(f2), 6)
+        #self.assertEqual(count_lines(f2), 6)
         self.assertEqual(count_lines(f3), 19)
         self.assertEqual(count_lines(f4), 21)
         self.assertEqual(count_lines(f5), 126)
@@ -61,7 +40,7 @@ class TestWC(unittest.TestCase):
 
     def test_count_words(self):
         # self.assertEqual(count_words(f1), 454)
-        self.assertEqual(count_words(f2), 15)
+        #self.assertEqual(count_words(f2), 15)
         self.assertEqual(count_words(f3), 485)
         self.assertEqual(count_words(f4), 1127)
         self.assertEqual(count_words(f5), 533)
@@ -76,7 +55,7 @@ class TestWC(unittest.TestCase):
 
     def test_count_bytes(self):
         #self.assertEqual(count_bytes(f1), 4733)
-        self.assertEqual(count_bytes(f2), 89)
+        #self.assertEqual(count_bytes(f2), 89)
         self.assertEqual(count_bytes(f3), 4898)
         self.assertEqual(count_bytes(f4), 8483)
         self.assertEqual(count_bytes(f5), 3608)
@@ -91,7 +70,7 @@ class TestWC(unittest.TestCase):
 
     def test_count_chars(self):
         #self.assertEqual(count_chars(f1), 4733)
-        self.assertEqual(count_chars(f2), 89)
+        #self.assertEqual(count_chars(f2), 89)
         self.assertEqual(count_chars(f3), 2750)
         self.assertEqual(count_chars(f4), 3721)
         self.assertEqual(count_chars(f5), 3608)
@@ -145,7 +124,7 @@ class TestWC(unittest.TestCase):
         self.assertEqual(all_valid_args(['-w', 'file.txt', '-']), (True, {'w'}, ['file.txt', '-']))
         self.assertEqual(all_valid_args(['-w', 'file.txt', '-']), (True, {'w'}, ['file.txt', '-']))
 
-        self.assertRaises(SystemExit, all_valid_args, ['-a', 'file.txt'])
+        self.assertRaises(SystemExit, all_valid_args, ['-a file.txt'])
         self.assertRaises(SystemExit, all_valid_args, ['-k', 'file.txt'])
         self.assertRaises(SystemExit, all_valid_args, ['- -', 'file.txt'])
         self.assertRaises(SystemExit, all_valid_args, ['--', 'file.txt'])
@@ -161,10 +140,44 @@ class TestWC(unittest.TestCase):
         self.assertRaises(SystemExit, all_valid_args, ['-cl -'])
         self.assertRaises(SystemExit, all_valid_args, ['-c -w -l'])
         self.assertRaises(SystemExit, all_valid_args, ['-wwc -lw -l -'])
+        self.assertRaises(SystemExit, all_valid_args, ['-k'])
+        self.assertRaises(SystemExit, all_valid_args, ['-y','testinputs/'])
+        self.assertRaises(SystemExit, all_valid_args, ['-qw testinputs/test.txt'])
+        self.assertRaises(SystemExit, all_valid_args, ['-w -x -f testinputs/test.txt testinputs/chinese.txt'])
+        self.assertRaises(SystemExit, all_valid_args, ['-clg testinputs/test.txt testinputs/chinese.txt'])
+        self.assertRaises(SystemExit, all_valid_args, ['-ql -'])
+        self.assertRaises(SystemExit, all_valid_args, ['-w-'])
+        self.assertRaises(SystemExit, all_valid_args, ['-l--a'])
+        self.assertRaises(SystemExit, all_valid_args, ['-wc-37'])
+        self.assertRaises(SystemExit, all_valid_args, ['-wc--37'])
+        self.assertRaises(SystemExit, all_valid_args, ['--wc--3'])
+        self.assertRaises(SystemExit, all_valid_args, ['- ---'])
+        self.assertRaises(SystemExit, all_valid_args, ['--- -'])
+        self.assertRaises(SystemExit, all_valid_args, ['----'])
+        self.assertRaises(SystemExit, all_valid_args, ['---w'])
+        self.assertRaises(SystemExit, all_valid_args, ['--w--'])
+        self.assertRaises(SystemExit, all_valid_args, ['--w--23'])
+        self.assertRaises(SystemExit, all_valid_args, ['--c-'])
+        self.assertRaises(SystemExit, all_valid_args, ['--w-- 23'])
+        self.assertRaises(SystemExit, all_valid_args, ['--@'])
+
 
     def test_compute_result(self):
         self.assertEqual(compute_result(['w', 'c', 'l'], ['testinputs/arabic.txt']), "\t19\t485\t4898\ttestinputs/arabic.txt\n")
         self.assertEqual(compute_result([], ['testinputs/arabic.txt']), "\t19\t485\t4898\ttestinputs/arabic.txt\n")
+        self.assertEqual(compute_result([], ['testinputs']),'wc: testinputs: Is a directory\n\t0\t0\t0\ttestinputs\n')
+        self.assertEqual(compute_result([], ['testinputs/']),'wc: testinputs/: Is a directory\n\t0\t0\t0\ttestinputs/\n')
+        self.assertEqual(compute_result([], ['testinputs/','testinputs/die.java']),'wc: testinputs/: Is a directory\n\t0\t0\t0\ttestinputs/\n\t126\t533\t3608\ttestinputs/die.java\n\t126\t533\t3608\ttotal\n')
+        self.assertEqual(compute_result(['w', 'c'], ['testinputs/strangerThings.txt','testinputs', 'testinputs/htmlTest.html']),'\t536\t11618\ttestinputs/strangerThings.txt\nwc: testinputs: Is a directory\n\t0\t0\ttestinputs\n\t229\t2488\ttestinputs/htmlTest.html\n\t765\t14106\ttotal\n')
+        self.assertEqual(compute_result([], ['testinputs/chinese.txt','testinputs', 'testinputs/htmlTest.html', 'testinputs/']),'\t21\t1127\t8483\ttestinputs/chinese.txt\nwc: testinputs: Is a directory\n\t0\t0\t0\ttestinputs\n\t15\t229\t2488\ttestinputs/htmlTest.html\nwc: testinputs/: Is a directory\n\t0\t0\t0\ttestinputs/\n\t36\t1356\t10971\ttotal\n')
+        self.assertEqual(compute_result(['c'], ['testinputs/']), 'wc: testinputs/: Is a directory\n\t0\ttestinputs/\n')
+        self.assertEqual(compute_result([], ['idk ']), 'wc: idk : No such file or directory\n')
+        self.assertEqual(compute_result([], ['noSuchFile.dat']),'wc: noSuchFile.dat: No such file or directory\n')
+        self.assertEqual(compute_result([], ['noSuchFile.dat','testinputs/arabic.txt']), 'wc: noSuchFile.dat: No such file or directory\n\t19\t485\t4898\ttestinputs/arabic.txt\n\t19\t485\t4898\ttotal\n')
+        self.assertEqual(compute_result(['c'], ['noSuchFile.dat','testinputs/die.java']), 'wc: noSuchFile.dat: No such file or directory\n\t3608\ttestinputs/die.java\n\t3608\ttotal\n')
+        self.assertEqual(compute_result(['w', 'l'], ['noSuchFile.dat','testinputs/die.java','noSuchFile.txt','testinputs/htmlTest.html']), 'wc: noSuchFile.dat: No such file or directory\n\t126\t533\ttestinputs/die.java\nwc: noSuchFile.txt: No such file or directory\n\t15\t229\ttestinputs/htmlTest.html\n\t141\t762\ttotal\n')
+        self.assertEqual(compute_result([], ['noSuchfile.txt','testinputs/']), 'wc: noSuchfile.txt: No such file or directory\nwc: testinputs/: Is a directory\n\t0\t0\t0\ttestinputs/\n\t0\t0\t0\ttotal\n')
+
 
 if __name__ == '__main__':
     unittest.main()
