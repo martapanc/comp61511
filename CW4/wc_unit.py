@@ -29,10 +29,14 @@ def compute_result(flag_list, file_list):
         total_line_count = 0
         total_word_count = 0
         total_byte_count = 0
+        total_char_count = 0
+        total_max_line_count = 0
 
         do_lines = True if "l" in flag_list else False
         do_words = True if "w" in flag_list else False
         do_bytes = True if "c" in flag_list else False
+        do_chars = True if "m" in flag_list else False
+        do_max_line = True if "L" in flag_list else False
 
         if len(flag_list) == 0:  # no flags = -wcl
             do_lines = True
@@ -48,33 +52,43 @@ def compute_result(flag_list, file_list):
                     if do_words:
                         word_count = count_words(f)
                         resultString += "\t" + str(word_count)
+                    if do_chars:
+                        char_count = count_chars(f)
+                        resultString += "\t" + str(char_count)
                     if do_bytes:
                         byte_count = count_bytes(f)
                         resultString += "\t" + str(byte_count)
+                    if do_max_line:
+                        max_count = get_max_line(f)
+                        resultString += "\t" + str(max_count)
+
                     resultString += "\t" + file + "\n"
 
                     if len(file_list) > 1:
-                        if do_lines:
-                            total_line_count += line_count
-                        if do_words:
-                            total_word_count += word_count
-                        if do_bytes:
-                            total_byte_count += byte_count
+                        if do_lines: total_line_count += line_count
+                        if do_words: total_word_count += word_count
+                        if do_chars: total_char_count += char_count
+                        if do_bytes: total_byte_count += byte_count
+                        if do_max_line:
+                            if total_max_line_count < max_count:
+                                total_max_line_count = max_count
+
             except FileNotFoundError:
                 resultString += "wc: " + file + ": No such file or directory\n"
             except IsADirectoryError:
                 resultString += "wc: " + file + ": Is a directory\n" # replicate wc's behaviour if one of the args is a directory - ugly, I know
                 if do_lines: resultString += "\t0"
                 if do_words: resultString += "\t0"
+                if do_chars: resultString += "\t0"
                 if do_bytes: resultString += "\t0"
+                if do_max_line: resultString += "\t0"
                 resultString += "\t" + file + "\n"
         if len(file_list) > 1:
-            if do_lines:
-                resultString += "\t" + str(total_line_count)
-            if do_words:
-                resultString += "\t" + str(total_word_count)
-            if do_bytes:
-                resultString += "\t" + str(total_byte_count)
+            if do_lines: resultString += "\t" + str(total_line_count)
+            if do_words: resultString += "\t" + str(total_word_count)
+            if do_chars: resultString += "\t" + str(total_char_count)
+            if do_bytes: resultString += "\t" + str(total_byte_count)
+            if do_max_line: resultString += "\t" + str(total_max_line_count)
             resultString += "\ttotal\n"
         return resultString
 
@@ -83,9 +97,10 @@ def check_flag(flag):
     #if flag == '-':
     #    invalid(flag)
     #    return False
+    validFlags = ['l', 'w', 'c', 'm', 'L']
     if not flag.isalpha():
         return False
-    if flag == 'l' or flag == 'w' or flag == 'c':
+    if flag in validFlags:
         return True
     else:
         return False
@@ -140,6 +155,14 @@ def count_chars(file):
         char_count += len(line)
     file.seek(0)
     return char_count
+
+def get_max_line(file):
+    max_count = 0
+    for line in file:
+        if len(line) > max_count:
+            max_count = len(line)-1
+    file.seek(0)
+    return max_count
 
 
 def invalid(option):

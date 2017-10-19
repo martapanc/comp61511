@@ -13,9 +13,10 @@ def wc_argparse():
     parser.add_argument('-w', '--words', help='print the word counts', action="store_true")
     parser.add_argument('-c', '--bytes', help='print the byte counts', action='store_true')
     parser.add_argument('-m', '--chars', help='print the character counts', action="store_true")
-    parser.add_argument('FILE', help='With no FILE, or when FILE is -, read standard input.', nargs='+')
-    parser.add_argument('--files0-from=F [FILES0_FROM=F]', help='read input from the files specified by\nNUL-terminated names in file F;\nIf F is - then read names from standard input', nargs='?')
 
+    parser.add_argument('--files0', help='read input from the files specified by\nNUL-terminated names in file F;\nIf F is - then read names from standard input', dest='files0',
+                            action='store_true', default=False)
+    parser.add_argument('FILE', help='With no FILE, or when FILE is -, read standard input.', nargs='*')
     arg_list = []
 
     for arg in sys.argv[1:]:
