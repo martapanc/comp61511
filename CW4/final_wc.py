@@ -1,11 +1,6 @@
-# Created by mbaxtmp2 on 4/10/17
-
-# python3 wc.py <flags> <files>
-# 0       1     2       3     ...
-# lines  words   bytes   file.txt
+# Created by mbaxtmp2 on 20/10/17
 
 import sys
-
 
 def wc():
     args_len = len(sys.argv)
@@ -19,6 +14,7 @@ def wc():
         flags_are_valid, flag_list, file_list = all_valid_args(sys.argv[1:])
 
         print (flag_list)
+        print (file_list)
         if flags_are_valid:
             print(compute_result(flag_list, file_list))
 
@@ -46,45 +42,50 @@ def compute_result(flag_list, file_list):
             do_bytes = True
 
         for file in file_list:
-            try:
-                with open(file, 'r', encoding='utf8') as f:
-                    if do_lines:
-                        line_count = count_lines(f)
-                        resultString += "\t" + str(line_count)
-                    if do_words:
-                        word_count = count_words(f)
-                        resultString += "\t" + str(word_count)
-                    if do_chars:
-                        char_count = count_chars(f)
-                        resultString += "\t" + str(char_count)
-                    if do_bytes:
-                        byte_count = count_bytes(f)
-                        resultString += "\t" + str(byte_count)
-                    if do_max_line:
-                        max_count = get_max_line(f)
-                        resultString += "\t" + str(max_count)
-
-                    resultString += "\t" + file + "\n"
-
-                    if len(file_list) > 1:
-                        if do_lines: total_line_count += line_count
-                        if do_words: total_word_count += word_count
-                        if do_chars: total_char_count += char_count
-                        if do_bytes: total_byte_count += byte_count
+            if file == '-':
+                for line in sys.stdin:
+                    resultString += "\t" + line + " "
+                resultString +="\n"
+            else:
+                try:
+                    with open(file, 'r', encoding='utf8') as f:
+                        if do_lines:
+                            line_count = count_lines(f)
+                            resultString += "\t" + str(line_count)
+                        if do_words:
+                            word_count = count_words(f)
+                            resultString += "\t" + str(word_count)
+                        if do_chars:
+                            char_count = count_chars(f)
+                            resultString += "\t" + str(char_count)
+                        if do_bytes:
+                            byte_count = count_bytes(f)
+                            resultString += "\t" + str(byte_count)
                         if do_max_line:
-                            if total_max_line_count < max_count:
-                                total_max_line_count = max_count
+                            max_count = get_max_line(f)
+                            resultString += "\t" + str(max_count)
 
-            except FileNotFoundError:
-                resultString += "wc: " + file + ": No such file or directory\n"
-            except IsADirectoryError:
-                resultString += "wc: " + file + ": Is a directory\n" # replicate wc's behaviour if one of the args is a directory - ugly, I know
-                if do_lines: resultString += "\t0"
-                if do_words: resultString += "\t0"
-                if do_chars: resultString += "\t0"
-                if do_bytes: resultString += "\t0"
-                if do_max_line: resultString += "\t0"
-                resultString += "\t" + file + "\n"
+                        resultString += "\t" + file + "\n"
+
+                        if len(file_list) > 1:
+                            if do_lines: total_line_count += line_count
+                            if do_words: total_word_count += word_count
+                            if do_chars: total_char_count += char_count
+                            if do_bytes: total_byte_count += byte_count
+                            if do_max_line:
+                                if total_max_line_count < max_count:
+                                    total_max_line_count = max_count
+
+                except FileNotFoundError:
+                    resultString += "wc: " + file + ": No such file or directory\n"
+                except IsADirectoryError:
+                    resultString += "wc: " + file + ": Is a directory\n" # replicate wc's behaviour if one of the args is a directory
+                    if do_lines: resultString += "\t0"
+                    if do_words: resultString += "\t0"
+                    if do_chars: resultString += "\t0"
+                    if do_bytes: resultString += "\t0"
+                    if do_max_line: resultString += "\t0"
+                    resultString += "\t" + file + "\n"
         if len(file_list) > 1:
             if do_lines: resultString += "\t" + str(total_line_count)
             if do_words: resultString += "\t" + str(total_word_count)
@@ -96,9 +97,7 @@ def compute_result(flag_list, file_list):
 
 
 def check_flag(flag):
-    #if flag == '-':
-    #    invalid(flag)
-    #    return False
+# Check args with single (-w, -c, -l, ...) or multiple flags (-wcl, -lL, ...)
     validFlags = ['l', 'w', 'c', 'm', 'L']
     if not flag.isalpha():
         return False
@@ -109,7 +108,7 @@ def check_flag(flag):
 
 
 def check_long_flag(flag):
-#    valid_flags = ['bytes', 'chars', 'lines', 'max-line-length', 'words', 'help', 'version']
+# If the flag is valid, the short version is returned
     valid_flags = {'bytes': 'c', 'chars': 'm', 'lines': 'l', 'max-line-length': 'L', 'words': 'w',
                     'c':'c', 'w':'w', 'm':'m', 'l':'l', 'L':'L',
                     'help': 'help', 'version': 'version', 'h':'help', 'v':'version'}
@@ -121,32 +120,36 @@ def check_long_flag(flag):
         return False
 
 def all_valid_args(args):
+# Returns true if all arguments are valid (or exits if the arg is invalid/unrecognized, or if 'version'/'help' is invoked)
     file_list = []
     flag_list = set([])
+    double_dash_in_args = False
     for param in args:
-        if len(param)>2 and param[:2] == '--':
-            if check_long_flag(param[2:]):
-                var, short_flag = check_long_flag(param[2:])
-                if (short_flag == "version"):
-                    version()
-                elif (short_flag == "help"):
-                    show_help()
-                else:
-                    flag_list.add(short_flag)
-            else:
-                unrecognized(param)
-        elif param == '--':
-            not_implem()
-        elif param[0] == '-' and len(param)>1:
-            cur_flag = param[1:]
-            for cf in cur_flag:  # check cases with more flags. E.g.: -wc -cl -lwc
-                if check_flag(cf):
-                    flag_list.add(cf)
-                else:
-                    invalid(cf)
-                    #return False, {}, []
+        if double_dash_in_args: #if -- is an arg, all args after it are treated as files regardless if they are or not (except -)
+            file_list.append(param)
         else:
-            file_list.append(param)  # If not preceded by "-", handle it as a file
+            if len(param)>2 and param[:2] == '--':
+                if check_long_flag(param[2:]):
+                    var, short_flag = check_long_flag(param[2:])
+                    if (short_flag == "version"):
+                        version()
+                    elif (short_flag == "help"):
+                        show_help()
+                    else:
+                        flag_list.add(short_flag)
+                else:
+                    unrecognized(param)
+            elif param == '--':
+                double_dash_in_args = True
+            elif param[0] == '-' and len(param)>1:
+                cur_flag = param[1:]
+                for cf in cur_flag:  # check cases with more flags. E.g.: -wc -cl -lwc
+                    if check_flag(cf):
+                        flag_list.add(cf)
+                    else:
+                        invalid(cf)
+            else:
+                file_list.append(param)  # If not preceded by "-", handle it as a file
     return True, flag_list, file_list
 
 def count_lines(file):
@@ -183,13 +186,6 @@ def get_max_line(file):
     max_count = 0
     for line in file:
         line_length = len(line)
-        # line_length=0
-        # for char in line:
-        #     if char == '\s':
-        #         line_length += 6
-        #     else:
-        #         line_length +=1
-
         if line_length > max_count:
             max_count = line_length-1
     file.seek(0)
