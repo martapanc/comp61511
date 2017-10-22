@@ -159,8 +159,16 @@ def count_chars(file):
 def get_max_line(file):
     max_count = 0
     for line in file:
-        if len(line) > max_count:
-            max_count = len(line)-1
+        line_length = len(line)
+        # line_length=0
+        # for char in line:
+        #     if char == '\s':
+        #         line_length += 6
+        #     else:
+        #         line_length +=1
+
+        if line_length > max_count:
+            max_count = line_length
     file.seek(0)
     return max_count
 
