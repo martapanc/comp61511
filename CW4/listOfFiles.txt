@@ -1,0 +1,1 @@
+testinputs/die.java\0testinput/test2.txt\0
