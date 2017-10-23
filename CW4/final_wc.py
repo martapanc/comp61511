@@ -164,10 +164,12 @@ def check_long_flag(flag):
     valid_flags = {'bytes': 'c', 'chars': 'm', 'lines': 'l', 'max-line-length': 'L', 'words': 'w',
                     'c':'c', 'w':'w', 'm':'m', 'l':'l', 'L':'L', # wc also recognises --w, --c, etc.
                     'help': 'help', 'version': 'version', 'h':'help', 'v':'version'}
-    if not flag.isalpha():
-        return False
+#    if not flag.isalpha():
+#        return False
     if flag in valid_flags:
         return True, valid_flags[flag]
+    elif 'files0-from=' in flag:
+        return True, flag
     else:
         return False
 
@@ -183,10 +185,12 @@ def all_valid_args(args):
             if len(param)>2 and param[:2] == '--': # Long-version flags (--lines, --words, ...)
                 if check_long_flag(param[2:]):
                     var, short_flag = check_long_flag(param[2:])
-                    if (short_flag == "version"):
+                    if short_flag == "version":
                         version()
-                    elif (short_flag == "help"):
+                    elif short_flag == "help":
                         show_help()
+                    elif "files0-from" in short_flag:
+                        files0(short_flag)
                     else:
                         flag_list.add(short_flag)
                 else:
@@ -263,6 +267,9 @@ def invalid(option):
 
 def unrecognized(option):
     sys.exit("wc: unrecognized option '" + str(option) + "'\nTry 'wc --help' for more information.")
+
+def files0(short_flag):
+    sys.exit(sys.stdin.read() + " " + short_flag)
 
 def version():
     sys.exit("wc.py 4.0 - Python implementation of\n"
