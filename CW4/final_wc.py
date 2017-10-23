@@ -3,9 +3,9 @@
 import sys
 
 def wc():
-    args_len = len(sys.argv)
+    args_len = len(sys.argv) #stdin case
     if args_len < 2:
-        not_implem()
+        compute_result([], ['-'], sys.argv)
     else:
         file_list = []
         flag_list = []
@@ -16,134 +16,144 @@ def wc():
         print (flag_list)
         print (file_list)
         if flags_are_valid:
-            compute_result(flag_list, file_list)
-    #        print(compute_result(flag_list, file_list))
+            result = compute_result(flag_list, file_list, sys.argv)
+#            print("\n\n" + result)
 
 
-def compute_result(flag_list, file_list):
-    if len(file_list) == 0:
-        not_implem()
-    else:
-        resultString = ''
-        total_line_count = 0
-        total_word_count = 0
-        total_byte_count = 0
-        total_char_count = 0
-        total_max_line_count = 0
+def compute_result(flag_list, file_list, args):
+    if len(file_list) == 0: #stdin case
+        file_list.append('-')
 
-        do_lines = True if "l" in flag_list else False
-        do_words = True if "w" in flag_list else False
-        do_bytes = True if "c" in flag_list else False
-        do_chars = True if "m" in flag_list else False
-        do_max_line = True if "L" in flag_list else False
+    resultString = ''
+    total_line_count = 0
+    total_word_count = 0
+    total_byte_count = 0
+    total_char_count = 0
+    total_max_line_count = 0
 
-        if len(flag_list) == 0:  # no flags = -wcl
-            do_lines = True
-            do_words = True
-            do_bytes = True
+    do_lines = True if "l" in flag_list else False
+    do_words = True if "w" in flag_list else False
+    do_bytes = True if "c" in flag_list else False
+    do_chars = True if "m" in flag_list else False
+    do_max_line = True if "L" in flag_list else False
 
-        for file in file_list:
-            if file == '-': # Handle stdin
-                stdin_content = '';
-                for line in sys.stdin:
-                    stdin_content += line
-                resultString += stdin_content
+    if len(flag_list) == 0:  # no flags = -wcl
+        do_lines = True
+        do_words = True
+        do_bytes = True
 
-                std_line, std_word, std_char, std_byte, std_max_line = count_stdin(stdin_content, do_lines, do_words, do_chars, do_bytes, do_max_line)
-                total_line_count += std_line
-                total_word_count += std_word
-                total_char_count += std_char
-                total_byte_count += std_byte
-                if total_max_line_count < std_max_line:
-                    total_max_line_count = std_max_line
-                if do_lines:
-                    print("\t" + str(std_line), end='')
-                if do_words:
-                    print("\t" + str(std_word), end='')
-                if do_chars:
-                    print("\t" + str(std_char), end='')
-                if do_bytes:
-                    print("\t" + str(std_byte), end='')
-                if do_max_line:
-                    print("\t" + str(std_max_line), end='')
+    for file in file_list:
+        if file == '-': # Handle stdin
+            stdin_content = '';
+            for line in sys.stdin:
+                stdin_content += line
+            resultString += stdin_content
+
+            std_line, std_word, std_char, std_byte, std_max_line = count_stdin(stdin_content, do_lines, do_words, do_chars, do_bytes, do_max_line)
+            total_line_count += std_line
+            total_word_count += std_word
+            total_char_count += std_char
+            total_byte_count += std_byte
+            if total_max_line_count < std_max_line:
+                total_max_line_count = std_max_line
+            if do_lines:
+                print("\t" + str(std_line), end='')
+                resultString += "\t" + str(std_line)
+            if do_words:
+                print("\t" + str(std_word), end='')
+                resultString += "\t" + str(std_word)
+            if do_chars:
+                print("\t" + str(std_char), end='')
+                resultString += "\t" + str(std_char)
+            if do_bytes:
+                print("\t" + str(std_byte), end='')
+                resultString += "\t" + str(std_byte)
+            if do_max_line:
+                print("\t" + str(std_max_line), end='')
+                resultString += "\t" + str(std_max_line)
+            if '-' in args:
                 print("\t-")
-            else: # Do count for all files
-                try:
-                    with open(file, 'r', encoding='utf8') as f:
-                        if do_lines:
-                            line_count = count_lines(f)
-                            print("\t" + str(line_count), end='')
-                            resultString += "\t" + str(line_count)
-                        if do_words:
-                            word_count = count_words(f)
-                            print("\t" + str(word_count), end='')
-                            resultString += "\t" + str(word_count)
-                        if do_chars:
-                            char_count = count_chars(f)
-                            print("\t" + str(char_count), end='')
-                            resultString += "\t" + str(char_count)
-                        if do_bytes:
-                            byte_count = count_bytes(f)
-                            print("\t" + str(byte_count), end='')
-                            resultString += "\t" + str(byte_count)
-                        if do_max_line:
-                            max_count = get_max_line(f)
-                            print("\t" + str(max_count), end='')
-                            resultString += "\t" + str(max_count)
-                        print("\t" + file)
-                        resultString += "\t" + file + "\n"
-
-                        if len(file_list) > 1:
-                            if do_lines: total_line_count += line_count
-                            if do_words: total_word_count += word_count
-                            if do_chars: total_char_count += char_count
-                            if do_bytes: total_byte_count += byte_count
-                            if do_max_line:
-                                if total_max_line_count < max_count:
-                                    total_max_line_count = max_count
-
-                except FileNotFoundError:
-                    print("wc: " + file + ": No such file or directory")
-                    resultString += "wc: " + file + ": No such file or directory\n"
-                except IsADirectoryError:
-                    print("wc: " + file + ": Is a directory")
-                    resultString += "wc: " + file + ": Is a directory\n" # replicate wc's behaviour if one of the args is a directory
+                resultString += "\t-\n"
+            else:
+                print("\t")
+                resultString += "\t\n"
+        else: # Do count for all files
+            try:
+                with open(file, 'r', encoding='utf8') as f:
                     if do_lines:
-                        print("\t0", end='')
-                        resultString += "\t0"
+                        line_count = count_lines(f)
+                        print("\t" + str(line_count), end='')
+                        resultString += "\t" + str(line_count)
                     if do_words:
-                        print("\t0", end='')
-                        resultString += "\t0"
+                        word_count = count_words(f)
+                        print("\t" + str(word_count), end='')
+                        resultString += "\t" + str(word_count)
                     if do_chars:
-                        print("\t0", end='')
-                        resultString += "\t0"
+                        char_count = count_chars(f)
+                        print("\t" + str(char_count), end='')
+                        resultString += "\t" + str(char_count)
                     if do_bytes:
-                        print("\t0", end='')
-                        resultString += "\t0"
+                        byte_count = count_bytes(f)
+                        print("\t" + str(byte_count), end='')
+                        resultString += "\t" + str(byte_count)
                     if do_max_line:
-                        print("\t0", end='')
-                        resultString += "\t0"
+                        max_count = get_max_line(f)
+                        print("\t" + str(max_count), end='')
+                        resultString += "\t" + str(max_count)
                     print("\t" + file)
                     resultString += "\t" + file + "\n"
-        if len(file_list) > 1:
-            if do_lines:
-                print("\t" + str(total_line_count), end='')
-                resultString += "\t" + str(total_line_count)
-            if do_words:
-                print("\t" + str(total_word_count), end='')
-                resultString += "\t" + str(total_word_count)
-            if do_chars:
-                print("\t" + str(total_char_count), end='')
-                resultString += "\t" + str(total_char_count)
-            if do_bytes:
-                print("\t" + str(total_byte_count), end='')
-                resultString += "\t" + str(total_byte_count)
-            if do_max_line:
-                print("\t" + str(total_max_line_count), end='')
-                resultString += "\t" + str(total_max_line_count)
-            print("\ttotal")
-            resultString += "\ttotal\n"
-        return resultString
+
+                    if len(file_list) > 1:
+                        if do_lines: total_line_count += line_count
+                        if do_words: total_word_count += word_count
+                        if do_chars: total_char_count += char_count
+                        if do_bytes: total_byte_count += byte_count
+                        if do_max_line:
+                            if total_max_line_count < max_count:
+                                total_max_line_count = max_count
+
+            except FileNotFoundError:
+                print("wc: " + file + ": No such file or directory")
+                resultString += "wc: " + file + ": No such file or directory\n"
+            except IsADirectoryError:
+                print("wc: " + file + ": Is a directory")
+                resultString += "wc: " + file + ": Is a directory\n" # replicate wc's behaviour if one of the args is a directory
+                if do_lines:
+                    print("\t0", end='')
+                    resultString += "\t0"
+                if do_words:
+                    print("\t0", end='')
+                    resultString += "\t0"
+                if do_chars:
+                    print("\t0", end='')
+                    resultString += "\t0"
+                if do_bytes:
+                    print("\t0", end='')
+                    resultString += "\t0"
+                if do_max_line:
+                    print("\t0", end='')
+                    resultString += "\t0"
+                print("\t" + file)
+                resultString += "\t" + file + "\n"
+    if len(file_list) > 1:
+        if do_lines:
+            print("\t" + str(total_line_count), end='')
+            resultString += "\t" + str(total_line_count)
+        if do_words:
+            print("\t" + str(total_word_count), end='')
+            resultString += "\t" + str(total_word_count)
+        if do_chars:
+            print("\t" + str(total_char_count), end='')
+            resultString += "\t" + str(total_char_count)
+        if do_bytes:
+            print("\t" + str(total_byte_count), end='')
+            resultString += "\t" + str(total_byte_count)
+        if do_max_line:
+            print("\t" + str(total_max_line_count), end='')
+            resultString += "\t" + str(total_max_line_count)
+        print("\ttotal")
+        resultString += "\ttotal\n"
+    return resultString
 
 
 def check_flag(flag):
@@ -175,7 +185,7 @@ def all_valid_args(args):
     flag_list = set([])
     double_dash_in_args = False
     for param in args:
-        if double_dash_in_args: #if -- is an arg, all args after it are treated as files regardless if they are or not (except -)
+        if double_dash_in_args: #if -- is an arg, all args (including -- itselg) after it are treated as files regardless if they are or not (except -)
             file_list.append(param)
         else:
             if len(param)>2 and param[:2] == '--':
@@ -241,19 +251,19 @@ def get_max_line(file):
     file.seek(0)
     return max_count
 
-def count_stdin(stdin_content, l, w, m, c, L):
-    linec = wordc = bytec = charc = maxlinec = 0
+def count_stdin(stdin_content, do_lines, do_words, do_chars, do_bytes, do_max_line):
+    line_count = word_count = byte_count = char_count = max_line_count = 0
     for line in stdin_content.split("\n"):
-        if L:
-            if len(line) > maxlinec:
-                maxlinec = len(line)
-        if l:  linec +=1
-    if w:
+        if do_max_line:
+            if len(line) > max_line_count:
+                max_line_count = len(line)
+        if do_lines:  line_count +=1
+    if do_words:
         words = stdin_content.split()
-        wordc += len(words)
-    if c:  bytec += len(stdin_content.encode("utf-8"))
-    if m:  charc += len(stdin_content)
-    return linec-1, wordc, charc, bytec, maxlinec
+        word_count += len(words)
+    if do_chars: char_count += len(stdin_content.encode("utf-8"))
+    if do_bytes:  byte_count += len(stdin_content)
+    return line_count-1, word_count, char_count, byte_count, max_line_count
 
 def invalid(option):
     sys.exit("wc: invalid option -- '" + str(option) + "'\nTry 'wc --help' for more information.")
