@@ -13,8 +13,6 @@ def wc():
 
         flags_are_valid, flag_list, file_list = all_valid_args(sys.argv[1:])
 
-        print (flag_list)
-        print (file_list)
         if flags_are_valid:
             result = compute_result(flag_list, file_list, sys.argv)
 #            print("\n\n" + result)
