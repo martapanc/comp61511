@@ -1,5 +1,8 @@
 # Created by mbaxtmp2 on 20/10/17
 
+#find . -type f -print0 | wc --files0-from=-
+#find (dir) [-type f] -print0 | wc [flags] --files0-from=-
+
 import sys
 
 def wc():
@@ -7,27 +10,20 @@ def wc():
     if args_len < 2:
         compute_result([], ['-'], sys.argv)
     else:
-        file_list = []
-        flag_list = []
+        file_list = flag_list = []
         flags_are_valid = True
-
         flags_are_valid, flag_list, file_list = all_valid_args(sys.argv[1:])
-
         if flags_are_valid:
             result = compute_result(flag_list, file_list, sys.argv)
 #            print("\n\n" + result)
 
-
 def compute_result(flag_list, file_list, args):
     if len(file_list) == 0: #stdin case
         file_list.append('-')
-
+    # The program prints counts file by file (to be consistent with wc's behaviour),
+    # however a string with the final output is built for testing purposes
     resultString = ''
-    total_line_count = 0
-    total_word_count = 0
-    total_byte_count = 0
-    total_char_count = 0
-    total_max_line_count = 0
+    total_line_count = total_word_count = total_byte_count = total_char_count = total_max_line_count = 0
 
     do_lines = True if "l" in flag_list else False
     do_words = True if "w" in flag_list else False
@@ -35,10 +31,8 @@ def compute_result(flag_list, file_list, args):
     do_chars = True if "m" in flag_list else False
     do_max_line = True if "L" in flag_list else False
 
-    if len(flag_list) == 0:  # no flags = -wcl
-        do_lines = True
-        do_words = True
-        do_bytes = True
+    if len(flag_list) == 0:  # If no flags are specified, the result is the same as -lwc
+        do_lines = do_words = do_bytes = True
 
     for file in file_list:
         if file == '-': # Handle stdin
@@ -54,7 +48,7 @@ def compute_result(flag_list, file_list, args):
             total_byte_count += std_byte
             if total_max_line_count < std_max_line:
                 total_max_line_count = std_max_line
-            if do_lines:
+            if do_lines: # Print only the counts requested by the flags
                 print("\t" + str(std_line), end='')
                 resultString += "\t" + str(std_line)
             if do_words:
@@ -69,13 +63,13 @@ def compute_result(flag_list, file_list, args):
             if do_max_line:
                 print("\t" + str(std_max_line), end='')
                 resultString += "\t" + str(std_max_line)
-            if '-' in args:
+            if '-' in args: # If '-' is among the arguments, '-' is printed after the counts (as it was a file name), otherwise nothing is printed
                 print("\t-")
                 resultString += "\t-\n"
             else:
                 print("\t")
                 resultString += "\t\n"
-        else: # Do count for all files
+        else: # Do counts for all files
             try:
                 with open(file, 'r', encoding='utf8') as f:
                     if do_lines:
@@ -101,7 +95,7 @@ def compute_result(flag_list, file_list, args):
                     print("\t" + file)
                     resultString += "\t" + file + "\n"
 
-                    if len(file_list) > 1:
+                    if len(file_list) > 1: # If more than one file is specified, the total sum of the counts is displayed
                         if do_lines: total_line_count += line_count
                         if do_words: total_word_count += word_count
                         if do_chars: total_char_count += char_count
@@ -115,7 +109,7 @@ def compute_result(flag_list, file_list, args):
                 resultString += "wc: " + file + ": No such file or directory\n"
             except IsADirectoryError:
                 print("wc: " + file + ": Is a directory")
-                resultString += "wc: " + file + ": Is a directory\n" # replicate wc's behaviour if one of the args is a directory
+                resultString += "wc: " + file + ": Is a directory\n" # Replicate wc's behaviour if one of the args is a directory
                 if do_lines:
                     print("\t0", end='')
                     resultString += "\t0"
@@ -168,7 +162,7 @@ def check_flag(flag):
 def check_long_flag(flag):
 # If the flag is valid, the short version is returned
     valid_flags = {'bytes': 'c', 'chars': 'm', 'lines': 'l', 'max-line-length': 'L', 'words': 'w',
-                    'c':'c', 'w':'w', 'm':'m', 'l':'l', 'L':'L',
+                    'c':'c', 'w':'w', 'm':'m', 'l':'l', 'L':'L', # wc also recognises --w, --c, etc.
                     'help': 'help', 'version': 'version', 'h':'help', 'v':'version'}
     if not flag.isalpha():
         return False
@@ -186,7 +180,7 @@ def all_valid_args(args):
         if double_dash_in_args: #if -- is an arg, all args (including -- itselg) after it are treated as files regardless if they are or not (except -)
             file_list.append(param)
         else:
-            if len(param)>2 and param[:2] == '--':
+            if len(param)>2 and param[:2] == '--': # Long-version flags (--lines, --words, ...)
                 if check_long_flag(param[2:]):
                     var, short_flag = check_long_flag(param[2:])
                     if (short_flag == "version"):
@@ -199,7 +193,7 @@ def all_valid_args(args):
                     unrecognized(param)
             elif param == '--':
                 double_dash_in_args = True
-            elif param[0] == '-' and len(param)>1:
+            elif param[0] == '-' and len(param)>1: # Short-version flags (-w, -c, -m, -wc...)
                 cur_flag = param[1:]
                 for cf in cur_flag:  # check cases with more flags. E.g.: -wc -cl -lwc
                     if check_flag(cf):
@@ -250,6 +244,7 @@ def get_max_line(file):
     return max_count
 
 def count_stdin(stdin_content, do_lines, do_words, do_chars, do_bytes, do_max_line):
+# Handle counts for stdin
     line_count = word_count = byte_count = char_count = max_line_count = 0
     for line in stdin_content.split("\n"):
         if do_max_line:
@@ -269,38 +264,35 @@ def invalid(option):
 def unrecognized(option):
     sys.exit("wc: unrecognized option '" + str(option) + "'\nTry 'wc --help' for more information.")
 
-def not_implem():
-    sys.exit("*stdin not implemented yet*")
-
 def version():
     sys.exit("wc.py 4.0 - Python implementation of\n"
-             + "  \"wc (GNU coreutils) 8.25\n"
-             + "  Copyright (C) 2016 Free Software Foundation, Inc.\n"
-             + "  Written by Paul Rubin and David MacKenzie.\"\n\n"
-             + "Created by Marta Pancaldi\n"
-             + "Final project of the course \'Software Engineering Concepts in Practice\' 2017 \n  by Dr Bijan Parsia @ The University of Manchester\n\n"
-             + "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.\n"
-             + "This is free software: you are free to change and redistribute it.\n"
-             + "There is NO WARRANTY, to the extent permitted by law.\n")
+        + "  \"wc (GNU coreutils) 8.25\n"
+        + "  Copyright (C) 2016 Free Software Foundation, Inc.\n"
+        + "  Written by Paul Rubin and David MacKenzie.\"\n\n"
+        + "Created by Marta Pancaldi\n"
+        + "Final project of the course \'Software Engineering Concepts in Practice\' 2017 \n  by Dr Bijan Parsia @ The University of Manchester\n\n"
+        + "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.\n"
+        + "This is free software: you are free to change and redistribute it.\n"
+        + "There is NO WARRANTY, to the extent permitted by law.\n")
 
 def show_help():
     sys.exit("Usage: wc [OPTION]... [FILE]...\nor:  wc [OPTION]... --files0-from=F\n"
-    + "Print newline, word, and byte counts for each FILE, and a total line if\nmore than one FILE is specified.  A word is a non-zero-length sequence of"
-    + "characters delimited by white space. \n\n"
-    + "With no FILE, or when FILE is -, read standard input.\n\n"
-    + "The options below may be used to select which counts are printed, always in\nthe following order: newline, word, character, byte, maximum line length.\n"
-    + "  -c, --bytes            print the byte counts\n"
-    + "  -m, --chars            print the character counts\n"
-    + "  -l, --lines            print the newline counts\n"
-    + "      --files0-from=F    read input from the files specified by\n"
-    + "                           NUL-terminated names in file F;\n"
-    + "                           If F is - then read names from standard input\n"
-    + "  -L, --max-line-length  print the maximum display width\n"
-    + "  -w, --words            print the word counts \n"
-    + "      --help     display this help and exit\n"
-    + "      --version  output version information and exit\n\n"
-    + "GNU coreutils online help: <http://www.gnu.org/software/coreutils/>\nFull documentation at: <http://www.gnu.org/software/coreutils/wc>\n"
-    + "or available locally via: info '(coreutils) wc invocation'")
+        + "Print newline, word, and byte counts for each FILE, and a total line if\nmore than one FILE is specified.  A word is a non-zero-length sequence of"
+        + "characters delimited by white space. \n\n"
+        + "With no FILE, or when FILE is -, read standard input.\n\n"
+        + "The options below may be used to select which counts are printed, always in\nthe following order: newline, word, character, byte, maximum line length.\n"
+        + "  -c, --bytes            print the byte counts\n"
+        + "  -m, --chars            print the character counts\n"
+        + "  -l, --lines            print the newline counts\n"
+        + "      --files0-from=F    read input from the files specified by\n"
+        + "                           NUL-terminated names in file F;\n"
+        + "                           If F is - then read names from standard input\n"
+        + "  -L, --max-line-length  print the maximum display width\n"
+        + "  -w, --words            print the word counts \n"
+        + "      --help     display this help and exit\n"
+        + "      --version  output version information and exit\n\n"
+        + "GNU coreutils online help: <http://www.gnu.org/software/coreutils/>\nFull documentation at: <http://www.gnu.org/software/coreutils/wc>\n"
+        + "or available locally via: info '(coreutils) wc invocation'")
 
 if __name__ == "__main__":
    wc()
