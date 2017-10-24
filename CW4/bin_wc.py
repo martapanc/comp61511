@@ -71,7 +71,7 @@ def compute_result(flag_list, file_list, args):
                 resultString += "\t\n"
         else: # Do counts for all files
             try:
-                with open(file, 'r', encoding='utf-8') as f:
+                with open(file, 'rb') as f:
                     if do_lines:
                         line_count = count_lines(f)
                         print("\t" + str(line_count), end='')
@@ -236,7 +236,7 @@ def count_words(file):
 def count_bytes(file):
     byte_count = 0
     for line in file:
-        byte_count += len(line.encode("utf-8"))
+        byte_count += len(line)
     file.seek(0)
     return byte_count
 
@@ -268,7 +268,7 @@ def count_stdin(stdin_content, do_lines, do_words, do_chars, do_bytes, do_max_li
         words = stdin_content.split()
         word_count += len(words)
     if do_chars: char_count += len(stdin_content)
-    if do_bytes:  byte_count += len(stdin_content.encode("utf-8"))
+    if do_bytes:  byte_count += len(stdin_content)
     return line_count-1, word_count, char_count, byte_count, max_line_count
 
 def files0(short_flag):
@@ -280,7 +280,7 @@ def files0(short_flag):
     else:
         file_name = short_flag
         try:
-            with open(file_name, 'r', encoding='utf-8') as file:
+            with open(file_name, 'rb') as file:
                 file_content = ''
                 for line in file:
                     file_content += line
