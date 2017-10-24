@@ -175,9 +175,10 @@ def check_long_flag(flag):
 
 def all_valid_args(args):
 # Returns true if all arguments are valid (or exits if the arg is invalid/unrecognized, or if 'version'/'help' is invoked)
-    file_list = []
+    file_list = files0_list = []
     flag_list = set([])
     double_dash_in_args = False
+    files0_in_args = False
     for param in args:
         if double_dash_in_args: #if -- is an arg, all args (including -- itselg) after it are treated as files regardless if they are or not (except -)
             file_list.append(param)
@@ -189,8 +190,9 @@ def all_valid_args(args):
                         version()
                     elif short_flag == "help":
                         show_help()
-                    elif "files0-from" in short_flag:
-                        files0(short_flag)
+                    elif "files0-from=" in short_flag: # Check if the flag is in the form "--files0-from=..."
+                        files0_in_args = True
+                        files0_list = files0(short_flag[12:])
                     else:
                         flag_list.add(short_flag)
                 else:
@@ -206,7 +208,14 @@ def all_valid_args(args):
                         invalid(cf)
             else:
                 file_list.append(param)  # If not preceded by "-", handle it as a file
-    return True, flag_list, file_list
+    if len(file_list) > 0 and files0_in_args: # If --files0-from is present, there cannot be other files as args
+        return extra_operand(file_list[0])
+    elif files0_in_args:
+        print("files0")
+        return True, flag_list, files0_list
+        #files0_list = files0()
+    else:
+        return True, flag_list, file_list
 
 def count_lines(file):
     line_count = 0
@@ -262,14 +271,31 @@ def count_stdin(stdin_content, do_lines, do_words, do_chars, do_bytes, do_max_li
     if do_bytes:  byte_count += len(stdin_content)
     return line_count-1, word_count, char_count, byte_count, max_line_count
 
+def files0(short_flag):
+    if short_flag == '-':
+        print("stdin: " + sys.stdin.read())
+    else:
+        file_name = short_flag
+        try:
+            with open(file_name, 'r', encoding='utf8') as file:
+                file_content = ''
+                for line in file:
+                    file_content += line
+                file_list = file_content.split("\x00") # Files must be separated by the NULL character
+                return file_list
+        except FileNotFoundError:
+            sys.exit("wc: cannot open '" + file_name + "' for reading: No such file or directory")
+        except IsADirectoryError:
+            sys.exit("wc: " + file_name + ": read error: Is a directory")
+
 def invalid(option):
     sys.exit("wc: invalid option -- '" + str(option) + "'\nTry 'wc --help' for more information.")
 
 def unrecognized(option):
     sys.exit("wc: unrecognized option '" + str(option) + "'\nTry 'wc --help' for more information.")
 
-def files0(short_flag):
-    sys.exit(sys.stdin.read() + " " + short_flag)
+def extra_operand(file):
+    sys.exit("wc: extra operand '" + file + "'\nfile operands cannot be combined with --files0-from\nTry 'wc --help' for more information.")
 
 def version():
     sys.exit("wc.py 4.0 - Python implementation of\n"
