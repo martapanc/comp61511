@@ -273,7 +273,10 @@ def count_stdin(stdin_content, do_lines, do_words, do_chars, do_bytes, do_max_li
 
 def files0(short_flag):
     if short_flag == '-':
-        print("stdin: " + sys.stdin.read())
+        #sys.exit("stdin: " + sys.stdin.read())
+        stdin_content = sys.stdin.read()
+        file_list = stdin_content.split("\x00")
+        return file_list
     else:
         file_name = short_flag
         try:
