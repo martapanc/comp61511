@@ -192,7 +192,7 @@ def all_valid_args(args):
                         show_help()
                     elif "files0-from=" in short_flag: # Check if the flag is in the form "--files0-from=..."
                         files0_in_args = True
-                        files0_list = files0(short_flag[12:])
+                        #files0_list = files0(short_flag[12:])
                     else:
                         flag_list.add(short_flag)
                 else:
@@ -211,7 +211,7 @@ def all_valid_args(args):
     if len(file_list) > 0 and files0_in_args: # If --files0-from is present, there cannot be other files as args
         return extra_operand(file_list[0])
     elif files0_in_args:
-        print("files0")
+        files0_list = files0(short_flag[12:])
         return True, flag_list, files0_list
         #files0_list = files0()
     else:
