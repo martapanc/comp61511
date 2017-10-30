@@ -127,6 +127,8 @@ def compute_result(flag_list, file_list, args):
                     resultString += "\t0"
                 print("\t" + file)
                 resultString += "\t" + file + "\n"
+            except OSError:
+                sys.exit('wc: ' + file + ': File name too long')
     if len(file_list) > 1:
         if do_lines:
             print("\t" + str(total_line_count), end='')
@@ -275,16 +277,27 @@ def files0(short_flag):
     if short_flag == '-':
         #sys.exit("stdin: " + sys.stdin.read())
         stdin_content = sys.stdin.read()
+        stdin_content.replace("\n", "\\n")
         file_list = stdin_content.split("\x00")
         return file_list
     else:
         file_name = short_flag
         try:
             with open(file_name, 'r', encoding='utf-8') as file:
-                file_content = ''
+                file_content = multiline_content = ''
+                line_count = 0
                 for line in file:
                     file_content += line
-                file_list = file_content.split("\x00") # Files must be separated by the NULL character
+                    line_count +=1
+                file.seek(0)
+                if line_count > 1: # Handle cases when the file is not a list of files, or the format is wrong
+                    for ln in file:
+                        ln = ln.replace("\'", "'\\''").replace("\n", "")
+                        multiline_content += "'" + ln + "'$'\\n'"
+                        file_list = multiline_content.split("\x00")
+                #file_content =  file_content.replace("\'", "'\\''").replace("\n", "'$'\\n''") # Case when the file is not a list of file
+                else:
+                    file_list = file_content.split("\x00") # Files must be separated by the NULL character
                 return file_list
         except FileNotFoundError:
             sys.exit("wc: cannot open '" + file_name + "' for reading: No such file or directory")
