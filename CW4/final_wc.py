@@ -105,6 +105,7 @@ def compute_result(flag_list, file_list, args):
                                 total_max_line_count = max_count
 
             except FileNotFoundError:
+                file = file.replace("\n", "''$'\\n'") # Replicate wc's behaviour if --files0-from=file that is not a list of files or is in the wrong format
                 print("wc: " + file + ": No such file or directory")
                 resultString += "wc: " + file + ": No such file or directory\n"
             except IsADirectoryError:
@@ -252,11 +253,18 @@ def count_chars(file):
 def get_max_line(file):
     max_count = 0
     for line in file:
-        line_length = len(line)
+        line_length = custom_len(line)
         if line_length > max_count:
             max_count = line_length-1
     file.seek(0)
     return max_count
+
+def custom_len(line):
+    len = 0
+    for char in line:
+        if char != "\x00":
+            len +=1
+    return len
 
 def count_stdin(stdin_content, do_lines, do_words, do_chars, do_bytes, do_max_line):
 # Handle counts for stdin
@@ -295,7 +303,6 @@ def files0(short_flag):
                         ln = ln.replace("\'", "'\\''").replace("\n", "")
                         multiline_content += "'" + ln + "'$'\\n'"
                         file_list = multiline_content.split("\x00")
-                #file_content =  file_content.replace("\'", "'\\''").replace("\n", "'$'\\n''") # Case when the file is not a list of file
                 else:
                     file_list = file_content.split("\x00") # Files must be separated by the NULL character
                 return file_list

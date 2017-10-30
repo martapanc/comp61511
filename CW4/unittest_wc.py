@@ -1,19 +1,19 @@
 import unittest
 
-from wc_unit import *
+from final_wc import *
 #from wc_argparse import *
 
 #f1 = open('wc.py', 'r')
 #f2 = open("compare.sh", 'r')
-f3 = open("testinputs/arabic.txt", 'r')
-f4 = open("testinputs/chinese.txt", 'r')
+f3 = open("testinputs/encoding/arabic.txt", 'r')
+f4 = open("testinputs/encoding/chinese.txt", 'r')
 f5 = open("testinputs/die.java", 'r')
 f6 = open("testinputs/emoji.txt", 'r')
 f7 = open("testinputs/empty", 'r')
 f8 = open("testinputs/htmlTest.html", 'r')
 f9 = open("testinputs/inferno2.txt", 'r')
 f10 = open("testinputs/oneLine.txt", 'r')
-f11 = open("testinputs/strangerThings.txt", 'r')
+f11 = open("testinputs/encoding/strangerThings.txt", 'r')
 f12 = open("testinputs/test2.txt", 'r')
 f13 = open("testinputs/test.txt", 'r')
 
