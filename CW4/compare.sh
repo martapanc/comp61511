@@ -4,7 +4,7 @@
 #echo
 echo " * wc_unit.py:"
 #python3 final_wc.py -wcmlL ${@:1}
-python3 final_wc.py  ${@:1}
+python3 bloody_bin.py  ${@:1}
 echo
 # echo " * wc2:"
 # python wc2.py ${@:1}
