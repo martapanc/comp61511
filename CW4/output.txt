@@ -1,0 +1,37 @@
+ * wc_unit.py:
+	126	533	3608	3608	134	testinputs/die.java
+	256	854	4616	5401	47	testinputs/emoji.txt
+	0	0	0	0	0	testinputs/empty
+wc: testinputs/encoding: Is a directory
+	0	0	0	0	0	testinputs/encoding
+	1	1	75	75	70	testinputs/F
+	1	1	905	905	865	testinputs/file_for_--files0-from
+	1	1	618	618	589	testinputs/file_for_--files0-from2
+	15	229	2462	2488	470	testinputs/htmlTest.html
+	14920	102197	553466	562492	480	testinputs/inferno2.txt
+	1	6	37	37	36	testinputs/oneLine.txt
+	6	22	131	139	25	testinputs/test2.txt
+	5	12	99	99	29	testinputs/test3.txt
+	1	1	61	181	120	testinputs/testChin5
+	8	74	371	371	56	testinputs/test.txt
+wc: -mcwl: No such file or directory
+	2	2	14	14	8	-
+	15343	103933	566463	576428	865	total
+
+ * wc:
+    126     533    3608    3608     134 testinputs/die.java
+    256     854    4616    5401      47 testinputs/emoji.txt
+      0       0       0       0       0 testinputs/empty
+      0       0       0       0       0 testinputs/encoding
+      1       1      75      75      70 testinputs/F
+      1       1     905     905     865 testinputs/file_for_--files0-from
+      1       1     618     618     589 testinputs/file_for_--files0-from2
+     15     229    2462    2488     470 testinputs/htmlTest.html
+  14920  102197  553466  562492     480 testinputs/inferno2.txt
+      1       6      37      37      36 testinputs/oneLine.txt
+      6      22     131     139      25 testinputs/test2.txt
+      5      12      99      99      29 testinputs/test3.txt
+      1       1      61     181     120 testinputs/testChin5
+      8      74     371     371      56 testinputs/test.txt
+      2       2      14      14       8 -
+  15343  103933  566463  576428     865 total

@@ -1,6 +1,6 @@
 import unittest
 
-from final_wc import *
+from wc_unit import *
 #from wc_argparse import *
 
 #f1 = open('wc.py', 'r')
