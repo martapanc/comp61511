@@ -125,11 +125,7 @@ def count_lines(file, isBinary):
 def count_words(file, isBinary):
     word_count = 0
     for line in file:
-        if isBinary:
-        #    words = line.replace(b'\xA0',b'\x20').replace(b'\x17',b'\x20').split(b'\x20')
-            words = line.split()
-        else:
-            words = line.split()
+        words = line.split()
         word_count += len(words)
     file.seek(0)
     return word_count
