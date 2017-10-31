@@ -54,7 +54,7 @@ def compute_result(flag_list, file_list, args):
             else:           print("\t")
         else: # Do counts for all files
             try:
-                if file[-4:] in ['.mp3', '.pdf', '.doc', 'docx']:
+                if file[-4:] in ['.mp3', '.pdf', '.doc', 'docx', '.xls', 'xlsx', '.png', '.jpg' '.zip']:
                     with open(file, 'rb') as f:
                         line_count, word_count, char_count, byte_count, max_count = read_file(file, f, True, do_lines, do_words, do_chars, do_bytes, do_max_line)
                 else:
@@ -96,7 +96,7 @@ def read_file(file, f, isBinary, do_lines, do_words, do_chars, do_bytes, do_max_
         line_count = count_lines(f, isBinary)
         print("\t" + str(line_count), end='')
     if do_words:
-        word_count = count_words(f)
+        word_count = count_words(f, isBinary)
         print("\t" + str(word_count), end='')
     if do_chars:
         char_count = count_chars(f, isBinary)
@@ -122,10 +122,14 @@ def count_lines(file, isBinary):
     file.seek(0)  # restores pointer at the beginning of file
     return line_count
 
-def count_words(file):
+def count_words(file, isBinary):
     word_count = 0
     for line in file:
-        words = line.split()
+        if isBinary:
+        #    words = line.replace(b'\xA0',b'\x20').replace(b'\x17',b'\x20').split(b'\x20')
+            words = line.split()
+        else:
+            words = line.split()
         word_count += len(words)
     file.seek(0)
     return word_count
