@@ -15,7 +15,6 @@ def wc():
         flags_are_valid, flag_list, file_list = all_valid_args(sys.argv[1:])
         if flags_are_valid:
             result = compute_result(flag_list, file_list, sys.argv)
-#            print("\n\n" + result)
 
 def compute_result(flag_list, file_list, args):
     if len(file_list) == 0: #stdin case
@@ -167,8 +166,6 @@ def check_long_flag(flag):
     valid_flags = {'bytes': 'c', 'chars': 'm', 'lines': 'l', 'max-line-length': 'L', 'words': 'w',
                     'c':'c', 'w':'w', 'm':'m', 'l':'l', 'L':'L', # wc also recognises --w, --c, etc.
                     'help': 'help', 'version': 'version', 'h':'help', 'v':'version'}
-#    if not flag.isalpha():
-#        return False
     if flag in valid_flags:
         return True, valid_flags[flag]
     elif 'files0-from=' in flag:
@@ -255,16 +252,20 @@ def get_max_line(file):
     for line in file:
         line_length = custom_len(line)
         if line_length > max_count:
-            max_count = line_length-1
+            max_count = line_length
     file.seek(0)
     return max_count
 
 def custom_len(line):
     len = 0
     for char in line:
-        if char != "\x00":
+        if ord(char) >= 0x4e00 and ord(char) <= 0x9fff: # Chinese chars are counted twice
+            len +=2
+        elif char == '，' or char == '：' or char == '」' or char == '。': # Non-standard punctuation chars
+            len += 2
+        elif char != "\x00": # Null chars are not counted
             len +=1
-    return len
+    return len-1
 
 def count_stdin(stdin_content, do_lines, do_words, do_chars, do_bytes, do_max_line):
 # Handle counts for stdin
