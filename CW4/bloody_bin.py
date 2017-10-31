@@ -54,44 +54,12 @@ def compute_result(flag_list, file_list, args):
             else:           print("\t")
         else: # Do counts for all files
             try:
-                if file[-3:] in ['mp3', 'pdf']:
+                if file[-4:] in ['.mp3', '.pdf', '.doc', 'docx']:
                     with open(file, 'rb') as f:
-                        if do_lines:
-                            line_count = count_lines_bin(f)
-                            print("\t" + str(line_count), end='')
-                        if do_words:
-                            word_count = count_words(f)
-                            print("\t" + str(word_count), end='')
-                        if do_chars:
-                            char_count = count_chars(f)
-                            print("\t" + str(char_count), end='')
-                        if do_bytes:
-                            byte_count = count_bytes_bin(f)
-                            print("\t" + str(byte_count), end='')
-                        if do_max_line:
-                            max_count = get_max_line_bin(f)
-                            print("\t" + str(max_count), end='')
-                        print("\t" + file)
-
+                        line_count, word_count, char_count, byte_count, max_count = read_file(file, f, True, do_lines, do_words, do_chars, do_bytes, do_max_line)
                 else:
                     with open(file, 'r', encoding='utf-8') as f:
-                        if do_lines:
-                            line_count = count_lines(f)
-                            print("\t" + str(line_count), end='')
-                        if do_words:
-                            word_count = count_words(f)
-                            print("\t" + str(word_count), end='')
-                        if do_chars:
-                            char_count = count_chars(f)
-                            print("\t" + str(char_count), end='')
-                        if do_bytes:
-                            byte_count = count_bytes(f)
-                            print("\t" + str(byte_count), end='')
-                        if do_max_line:
-                            max_count = get_max_line(f)
-                            print("\t" + str(max_count), end='')
-                        print("\t" + file)
-
+                        line_count, word_count, char_count, byte_count, max_count = read_file(file, f, False, do_lines, do_words, do_chars, do_bytes, do_max_line)
                 if len(file_list) > 1: # If more than one file is specified, the total sum of the counts is displayed
                     if do_lines:    total_line_count += line_count
                     if do_words:    total_word_count += word_count
@@ -99,7 +67,6 @@ def compute_result(flag_list, file_list, args):
                     if do_bytes:    total_byte_count += byte_count
                     if do_max_line:
                         if total_max_line_count < max_count:    total_max_line_count = max_count
-
             except FileNotFoundError:
                 file = file.replace("\n", "''$'\\n'") # Replicate wc's behaviour if --files0-from=file that is not a list of files or is in the wrong format
                 if '=' in file:     print("wc: '" + file + "': No such file or directory") # Replicate wc -- --files0-from=file (single quotes are added if = is present in the name)
@@ -114,6 +81,7 @@ def compute_result(flag_list, file_list, args):
                 print("\t" + file)
             except OSError:
                 sys.exit('wc: ' + file + ': File name too long')
+    # End of file-for-loop
     if len(file_list) > 1:
         if do_lines:    print("\t" + str(total_line_count), end='')
         if do_words:    print("\t" + str(total_word_count), end='')
@@ -121,6 +89,89 @@ def compute_result(flag_list, file_list, args):
         if do_bytes:    print("\t" + str(total_byte_count), end='')
         if do_max_line: print("\t" + str(total_max_line_count), end='')
         print("\ttotal")
+
+
+def read_file(file, f, isBinary, do_lines, do_words, do_chars, do_bytes, do_max_line):
+    if do_lines:
+        line_count = count_lines(f, isBinary)
+        print("\t" + str(line_count), end='')
+    if do_words:
+        word_count = count_words(f)
+        print("\t" + str(word_count), end='')
+    if do_chars:
+        char_count = count_chars(f, isBinary)
+        print("\t" + str(char_count), end='')
+    if do_bytes:
+        byte_count = count_bytes(f, isBinary)
+        print("\t" + str(byte_count), end='')
+    if do_max_line:
+        max_count = get_max_line(f, isBinary)
+        print("\t" + str(max_count), end='')
+    print("\t" + file)
+
+    return line_count, word_count, char_count, byte_count, max_count
+
+
+def count_lines(file, isBinary):
+    line_count = 0
+    for line in file:
+        if isBinary:
+            if b"\n" in line:   line_count +=1
+        else:
+            if "\n" in line:    line_count += 1
+    file.seek(0)  # restores pointer at the beginning of file
+    return line_count
+
+def count_words(file):
+    word_count = 0
+    for line in file:
+        words = line.split()
+        word_count += len(words)
+    file.seek(0)
+    return word_count
+
+def count_chars(file, isBinary):
+    char_count = 0
+    for line in file:
+        if isBinary:
+            char_count += len(line.decode('utf-8', 'ignore'))
+        else:
+            char_count += len(line)
+    file.seek(0)
+    return char_count
+
+def count_bytes(file, isBinary):
+    byte_count = 0
+    for line in file:
+        if isBinary:
+            byte_count += len(line)
+        else:
+            byte_count += len(line.encode("utf-8"))
+    file.seek(0)
+    return byte_count
+
+def get_max_line(file, isBinary):
+    max_count = 0
+    for line in file:
+        if isBinary:
+            line_length = len(line)
+        else:
+            line_length = custom_len(line)
+        if line_length > max_count:
+            max_count = line_length
+    file.seek(0)
+    return max_count
+
+def custom_len(line):
+    len = 0
+    for char in line:
+        if ord(char) >= 0x4e00 and ord(char) <= 0x9fff: # Chinese chars are counted twice
+            len +=2
+        elif char == '，' or char == '：' or char == '」' or char == '。': # Non-standard punctuation chars
+            len += 2
+        elif char != "\x00": # Null chars are not counted
+            len +=1
+    return len-1
 
 def check_flag(flag):
 # Check args with single (-w, -c, -l, ...) or multiple flags (-wcl, -lL, ...)
@@ -188,86 +239,6 @@ def all_valid_args(args):
     else:
         return True, flag_list, file_list
 
-def count_lines(file):
-    line_count = 0
-    for line in file:
-        if "\n" in line:
-            line_count += 1
-    file.seek(0)  # restores pointer at the beginning of file
-    return line_count
-
-def count_lines_bin(file):
-    line_count = 0
-    for line in file:
-        if b'\n' in line:
-            line_count += 1
-    file.seek(0)  # restores pointer at the beginning of file
-    return line_count
-
-def count_words(file):
-    word_count = 0
-    for line in file:
-        words = line.split()
-        word_count += len(words)
-    file.seek(0)
-    return word_count
-
-def count_bytes(file):
-    byte_count = 0
-    for line in file:
-        byte_count += len(line.encode("utf-8"))
-    file.seek(0)
-    return byte_count
-
-def count_chars(file):
-    char_count = 0
-    for line in file:
-        char_count += len(line)
-    file.seek(0)
-    return char_count
-
-def count_bytes_bin(file):
-    byte_count = 0
-    for line in file:
-        byte_count += len(line)
-    file.seek(0)
-    return byte_count
-
-def count_chars_bin(file):
-    char_count = 0
-    for line in file:
-        char_count += len(line)
-    file.seek(0)
-    return char_count
-
-def get_max_line(file):
-    max_count = 0
-    for line in file:
-        line_length = custom_len(line)
-        if line_length > max_count:
-            max_count = line_length
-    file.seek(0)
-    return max_count
-
-def get_max_line_bin(file):
-    max_count = 0
-    for line in file:
-        line_length = len(line)
-        if line_length > max_count:
-            max_count = line_length
-    file.seek(0)
-    return max_count
-
-def custom_len(line):
-    len = 0
-    for char in line:
-        if ord(char) >= 0x4e00 and ord(char) <= 0x9fff: # Chinese chars are counted twice
-            len +=2
-        elif char == '，' or char == '：' or char == '」' or char == '。': # Non-standard punctuation chars
-            len += 2
-        elif char != "\x00": # Null chars are not counted
-            len +=1
-    return len-1
 
 def count_stdin(stdin_content, do_lines, do_words, do_chars, do_bytes, do_max_line):
 # Handle counts for stdin
@@ -340,16 +311,11 @@ def show_help():
         + "characters delimited by white space. \n\n"
         + "With no FILE, or when FILE is -, read standard input.\n\n"
         + "The options below may be used to select which counts are printed, always in\nthe following order: newline, word, character, byte, maximum line length.\n"
-        + "  -c, --bytes            print the byte counts\n"
-        + "  -m, --chars            print the character counts\n"
-        + "  -l, --lines            print the newline counts\n"
-        + "      --files0-from=F    read input from the files specified by\n"
-        + "                           NUL-terminated names in file F;\n"
-        + "                           If F is - then read names from standard input\n"
-        + "  -L, --max-line-length  print the maximum display width\n"
-        + "  -w, --words            print the word counts \n"
-        + "      --help     display this help and exit\n"
-        + "      --version  output version information and exit\n\n"
+        + "  -c, --bytes            print the byte counts\n" + "  -m, --chars            print the character counts\n"
+        + "  -l, --lines            print the newline counts\n" + "      --files0-from=F    read input from the files specified by\n"
+        + "                           NUL-terminated names in file F;\n" + "                           If F is - then read names from standard input\n"
+        + "  -L, --max-line-length  print the maximum display width\n" + "  -w, --words            print the word counts \n"
+        + "      --help     display this help and exit\n" + "      --version  output version information and exit\n\n"
         + "GNU coreutils online help: <http://www.gnu.org/software/coreutils/>\nFull documentation at: <http://www.gnu.org/software/coreutils/wc>\n"
         + "or available locally via: info '(coreutils) wc invocation'")
 
