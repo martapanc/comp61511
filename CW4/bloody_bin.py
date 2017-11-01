@@ -13,8 +13,7 @@ def wc():
         file_list = flag_list = []
         flags_are_valid = True
         flags_are_valid, flag_list, file_list = all_valid_args(sys.argv[1:])
-        if flags_are_valid:
-            compute_result(flag_list, file_list, sys.argv)
+        if flags_are_valid:     compute_result(flag_list, file_list, sys.argv)
 
 def compute_result(flag_list, file_list, args):
     if len(file_list) == 0: #stdin case
@@ -54,7 +53,7 @@ def compute_result(flag_list, file_list, args):
             else:           print("\t")
         else: # Do counts for all files
             try:
-                if file[-4:] in ['.mp3', '.pdf', '.doc', 'docx', '.xls', 'xlsx', '.png', '.jpg' '.zip']:
+                if file[-4:] in ['.mp3', '.pdf', '.doc', 'docx', '.xls', 'xlsx', '.png', '.jpg', '.zip', 'rage']: #.coverage
                     with open(file, 'rb') as f:
                         line_count, word_count, char_count, byte_count, max_count = read_file(file, f, True, do_lines, do_words, do_chars, do_bytes, do_max_line)
                 else:
@@ -68,7 +67,7 @@ def compute_result(flag_list, file_list, args):
                     if do_max_line:
                         if total_max_line_count < max_count:    total_max_line_count = max_count
             except FileNotFoundError:
-                file = file.replace("\n", "''$'\\n'") # Replicate wc's behaviour if --files0-from=file that is not a list of files or is in the wrong format
+                if '\n' in file: file = "'" + file.replace("\n", "'$'\\n'") # Replicate wc's behaviour if --files0-from=file that is not a list of files or is in the wrong format
                 if '=' in file:     print("wc: '" + file + "': No such file or directory") # Replicate wc -- --files0-from=file (single quotes are added if = is present in the name)
                 else:               print("wc: " + file + ": No such file or directory")
             except IsADirectoryError:
@@ -92,6 +91,7 @@ def compute_result(flag_list, file_list, args):
 
 
 def read_file(file, f, isBinary, do_lines, do_words, do_chars, do_bytes, do_max_line):
+    line_count = word_count = char_count = byte_count = max_count = 0
     if do_lines:
         line_count = count_lines(f, isBinary)
         print("\t" + str(line_count), end='')
